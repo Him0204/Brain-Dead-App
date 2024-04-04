@@ -20,7 +20,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:text="Welcome Back!"
+            android:text="@string/welcome_back"
             android:textColor="@color/black"
             android:textSize="34sp"
             android:textStyle="bold" />
@@ -30,7 +30,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:text="Sign in to continue!"
+            android:text="@string/sign_in_to_continue"
             android:textColor="@color/black"
             android:textSize="34sp"
             android:textStyle="bold" />
@@ -42,7 +42,7 @@
             android:layout_gravity="center"
             android:layout_marginTop="12.5dp"
             android:ems="10"
-            android:hint="📧 Your Email"
+            android:hint="@string/your_email"
             android:inputType="textEmailAddress" />
 
         <EditText
@@ -52,7 +52,7 @@
             android:layout_gravity="center"
             android:layout_marginTop="12.5dp"
             android:ems="10"
-            android:hint="🔒 Password"
+            android:hint="@string/password"
             android:inputType="textPassword" />
 
         <Button
@@ -62,7 +62,7 @@
             android:layout_gravity="center"
             android:layout_marginTop="12.5dp"
             android:backgroundTint="#00FFFFFF"
-            android:text="Forgot your password?"
+            android:text="@string/forgot_your_password"
             android:textColor="@color/material_dynamic_neutral50" />
 
         <Button
@@ -72,7 +72,7 @@
             android:layout_gravity="center"
             android:layout_marginTop="12.5dp"
             android:backgroundTint="@android:color/holo_orange_light"
-            android:text="Sign In"
+            android:text="@string/sign_in"
             android:textColor="@color/black"
             android:textStyle="bold" />
 
@@ -83,7 +83,7 @@
             android:layout_gravity="center"
             android:layout_marginTop="12.5dp"
             android:backgroundTint="@android:color/darker_gray"
-            android:text="OR"
+            android:text="@string/or"
             android:textColor="@color/material_dynamic_neutral50" />
 
         <Button
@@ -93,7 +93,7 @@
             android:layout_gravity="center"
             android:layout_marginTop="12.5dp"
             android:backgroundTint="@android:color/holo_purple"
-            android:text="Continue with Google"
+            android:text="@string/continue_with_google"
             android:textColor="@color/black"
             android:textStyle="bold" />
 
@@ -104,7 +104,7 @@
             android:layout_gravity="center"
             android:layout_marginTop="12.5dp"
             android:backgroundTint="#00FFFFFF"
-            android:text="Don't have an account? Sign Up"
+            android:text="@string/don_t_have_an_account_sign_up"
             android:textColor="@color/material_dynamic_neutral50" />
     </LinearLayout>
 

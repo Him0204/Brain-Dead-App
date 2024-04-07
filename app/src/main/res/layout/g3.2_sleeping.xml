@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg2"
+    tools:context=".sleeping">
+
+    <TextView
+        android:id="@+id/textView_insomnia"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="150dp"
+        android:layout_centerHorizontal="true"
+        android:text="3. Make him fall asleep"
+        android:textColor="@color/black"
+        android:textSize="24sp"
+        android:textStyle="bold" />
+
+    <ImageButton
+        android:id="@+id/imageButton_home"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="90dp"
+        android:background="@android:drawable/screen_background_light"
+        android:scaleType="fitCenter"
+        android:src="@drawable/home" />
+
+    <ImageButton
+        android:id="@+id/imageButton_sound"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginLeft="15dp"
+        android:layout_marginTop="90dp"
+        android:layout_toRightOf="@+id/imageButton_home"
+        android:background="@android:drawable/screen_background_light"
+        android:scaleType="fitCenter"
+        android:src="@drawable/speaker" />
+
+    <ImageButton
+        android:id="@+id/imageButton_hint"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginLeft="15dp"
+        android:layout_marginTop="90dp"
+        android:layout_toRightOf="@+id/imageButton_sound"
+        android:background="@android:drawable/screen_background_light"
+        android:scaleType="fitCenter"
+        android:src="@drawable/hint" />
+
+    <ImageButton
+        android:id="@+id/imageButton_reset"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginLeft="15dp"
+        android:layout_marginTop="90dp"
+        android:layout_toRightOf="@+id/imageButton_hint"
+        android:background="@android:drawable/screen_background_light"
+        android:scaleType="fitCenter"
+        android:src="@drawable/reset" />
+
+    <ImageButton
+        android:id="@+id/imageButton_next"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginLeft="15dp"
+        android:layout_marginTop="90dp"
+        android:layout_toRightOf="@+id/imageButton_reset"
+        android:background="@android:drawable/screen_background_light"
+        android:scaleType="fitCenter"
+        android:src="@drawable/next" />
+
+    <ImageButton
+        android:id="@+id/imageButton_sleeping"
+        android:layout_width="wrap_content"
+        android:layout_height="250dp"
+        android:layout_centerVertical="true"
+        android:background="?android:attr/activatedBackgroundIndicator"
+        android:scaleType="fitCenter"
+        android:src="@drawable/sleeping" />
+
+</RelativeLayout>

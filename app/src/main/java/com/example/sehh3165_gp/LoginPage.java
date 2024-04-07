@@ -1,19 +1,14 @@
 package com.example.sehh3165_gp;
 
 import android.content.Intent;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-
+import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 public class LoginPage extends AppCompatActivity implements View.OnClickListener {
-
-    DatabaseHelper dbHelper = new DatabaseHelper(getApplicationContext());
-    SQLiteDatabase read_db = dbHelper.getReadableDatabase();
 
     EditText email, passwd;
     Button signIn, forgetPw, signUp;
@@ -35,20 +30,22 @@ public class LoginPage extends AppCompatActivity implements View.OnClickListener
     }
 
     private boolean validate(String email, String passwd) {
-        if (email.isEmpty() && passwd.isEmpty()) {
-            Cursor cursor = read_db.query(dbHelper.TABLE_NAME);
-        }
-        else
-            return false;
+        DatabaseHelper DB = new DatabaseHelper(this);
+        return DB.validate(email, passwd);
     }
 
     @Override
     public void onClick(View v) {
         if (v.getId() == R.id.button_SignIn) {
-            if (validate(email.getText().toString(), passwd.getText().toString()))
+            if (email.getText().toString().isEmpty() || passwd.getText().toString().isEmpty())
+                Toast.makeText(LoginPage.this, "Please fill in email/password", Toast.LENGTH_SHORT).show();
+            else if (validate(email.getText().toString(), passwd.getText().toString()))
                 startActivity(new Intent(LoginPage.this, Lobby.class));
-            else
-                toggle
+            else{
+                Toast.makeText(LoginPage.this, "Email/Password invalid", Toast.LENGTH_SHORT).show();
+                email.setText("");
+                passwd.setText("");
+            }
         }
         else if (v.getId() == R.id.button_ForgotPassword) {
             startActivity(new Intent(LoginPage.this, ResetPage.class));

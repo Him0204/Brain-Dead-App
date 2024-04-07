@@ -50,6 +50,10 @@ public class SignupPage extends AppCompatActivity implements View.OnClickListene
                 Toast.makeText(SignupPage.this, "Password not match", Toast.LENGTH_SHORT).show();
             else if (register(email.getText().toString(), passwd.getText().toString(), username.getText().toString())) {
                 Toast.makeText(SignupPage.this, "SignUp Successfully", Toast.LENGTH_SHORT).show();
+                email.setText("");
+                passwd.setText("");
+                confirmPw.setText("");
+                username.setText("");
                 startActivity(new Intent(SignupPage.this, LoginPage.class));
             }
             else

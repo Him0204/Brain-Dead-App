@@ -39,9 +39,12 @@ public class LoginPage extends AppCompatActivity implements View.OnClickListener
         if (v.getId() == R.id.button_SignIn) {
             if (email.getText().toString().isEmpty() || passwd.getText().toString().isEmpty())
                 Toast.makeText(LoginPage.this, "Please fill in email/password", Toast.LENGTH_SHORT).show();
-            else if (validate(email.getText().toString(), passwd.getText().toString()))
+            else if (validate(email.getText().toString(), passwd.getText().toString())) {
+                email.setText("");
+                passwd.setText("");
                 startActivity(new Intent(LoginPage.this, Lobby.class));
-            else{
+            }
+            else {
                 Toast.makeText(LoginPage.this, "Email/Password invalid", Toast.LENGTH_SHORT).show();
                 email.setText("");
                 passwd.setText("");

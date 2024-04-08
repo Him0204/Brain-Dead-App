@@ -24,5 +24,4 @@
         <activity android:name=".SignupPage" />
         <activity android:name=".LobbyPage" />
     </application>
-
 </manifest>

@@ -93,7 +93,7 @@
         android:layout_marginEnd="-10dp"
         android:background="?android:attr/activatedBackgroundIndicator"
         android:scaleType="fitCenter"
-        android:src="@drawable/G3" />
+        android:src="@drawable/g3_aromatherapy" />
 
     <ImageButton
         android:id="@+id/imageButton_mp3"

@@ -9,4 +9,20 @@
     <item name="imageButton_EmptyCup" type="id" />
     <item name="imageButton_kettle" type="id" />
     <item name="imageButton_FullCup" type="id" />
+    <item name="textView_baby" type="id" />
+    <item name="imageButton_crying_baby" type="id" />
+    <item name="imageButton_nipple" type="id" />
+    <item name="imageButton_toy" type="id" />
+    <item name="imageButton_toy2" type="id" />
+    <item name="imageButton_stop_crying_baby" type="id" />
+    <item name="textView_insomnia" type="id" />
+    <item name="imageButton_insomnia" type="id" />
+    <item name="imageButton_aromatherapy" type="id" />
+    <item name="imageButton_mp3" type="id" />
+    <item name="imageButton_milk" type="id" />
+    <item name="imageButton_sleeping" type="id" />
+    <item name="textView_computer" type="id" />
+    <item name="imageButton_computer" type="id" />
+    <item name="imageButton_router" type="id" />
+    <item name="imageButton_no_wifi_computer" type="id" />
 </resources>

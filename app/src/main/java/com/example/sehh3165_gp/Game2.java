@@ -36,7 +36,7 @@ public class Game2 extends AppCompatActivity implements View.OnClickListener {
     @Override
     public void onClick(View v) {
         if (v.getId() == R.id.imageButton_home) {
-            Intent i = new Intent(Game1.this, LobbyPage.class);
+            Intent i = new Intent(Game2.this, LobbyPage.class);
             i.putExtra("Email", email);
             startActivity(i);
         }

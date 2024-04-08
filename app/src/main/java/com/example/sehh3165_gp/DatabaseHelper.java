@@ -97,16 +97,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return false;
     }
 
-    //Get user data for lobby, [1]Username [2]Stage [3]Point
+    //Get user data for lobby, [0]Username [1]Stage [2]Point
     public void getInfo(String email, String[] getBack) {
         SQLiteDatabase DB = this.getReadableDatabase();
         try (Cursor cursor = DB.rawQuery(
                 "SELECT "+COLUMN2_USERNAME+", "+COLUMN2_STAGE+", "+COLUMN2_POINT+" FROM " +
                         TABLE2_NAME + " WHERE " + COLUMN2_EMAIL + " = ?", new String[]{email})) {
             if (cursor != null && cursor.moveToFirst()) {
-                getBack[1] = cursor.getString(0);
-                getBack[2] = cursor.getString(1);
-                getBack[3] = cursor.getString(2);
+                getBack[0] = cursor.getString(0);
+                getBack[1] = cursor.getString(1);
+                getBack[2] = cursor.getString(2);
             }
         }
     }

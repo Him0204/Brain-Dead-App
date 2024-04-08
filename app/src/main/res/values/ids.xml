@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="textView_cup" type="id" />
+    <item name="imageButton_home" type="id" />
+    <item name="imageButton_sound" type="id" />
+    <item name="imageButton_hint" type="id" />
+    <item name="imageButton_reset" type="id" />
+    <item name="imageButton_next" type="id" />
+    <item name="imageButton_EmptyCup" type="id" />
+    <item name="imageButton_kettle" type="id" />
+    <item name="imageButton_FullCup" type="id" />
+</resources>

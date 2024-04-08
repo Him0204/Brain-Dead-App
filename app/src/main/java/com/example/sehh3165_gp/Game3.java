@@ -7,7 +7,7 @@ import android.widget.ImageButton;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
-public class Game1 extends AppCompatActivity implements View.OnClickListener {
+public class Game3 extends AppCompatActivity implements View.OnClickListener {
 
     ImageButton home, sound, game_hint, game_reset, next;
     String email;
@@ -44,7 +44,7 @@ public class Game1 extends AppCompatActivity implements View.OnClickListener {
             pass
         }
         else if (v.getId() == R.id.imageButton_hint) {
-            Toast.makeText(Game1.this, "", Toast.LENGTH_SHORT).show();
+            Toast.makeText(Game3.this, "", Toast.LENGTH_SHORT).show();
         }
         else if (v.getId() == R.id.imageButton_reset) {
             pass

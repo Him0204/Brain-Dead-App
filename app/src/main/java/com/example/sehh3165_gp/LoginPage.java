@@ -42,7 +42,7 @@ public class LoginPage extends AppCompatActivity implements View.OnClickListener
             else if (validate(email.getText().toString(), passwd.getText().toString())) {
                 email.setText("");
                 passwd.setText("");
-                startActivity(new Intent(LoginPage.this, Lobby.class));
+                startActivity(new Intent(LoginPage.this, LobbyPage.class));
             }
             else {
                 Toast.makeText(LoginPage.this, "Email/Password invalid", Toast.LENGTH_SHORT).show();

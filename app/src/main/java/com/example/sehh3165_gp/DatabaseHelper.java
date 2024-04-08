@@ -46,6 +46,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         onCreate(db);
     }
 
+    //Create new record in database when signup
     public Boolean inputData(String email, String passwd, String username) {
         SQLiteDatabase DB = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
@@ -62,6 +63,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return result1 != -1 && result2 != -1;
     }
 
+    //Update password when user forget
     public Boolean updatePw(String email, String passwd) {
         SQLiteDatabase DB = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
@@ -72,18 +74,69 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return result != -1;
     }
 
+    //Check if email exist: T -> exist; F -> not exist
     public Boolean checkRecord(String email) {
         SQLiteDatabase DB = this.getReadableDatabase();
-        @SuppressLint("Recycle") Cursor cursor = DB.rawQuery(
-                "SELECT * FROM "+TABLE_NAME+" WHERE "+COLUMN_EMAIL+" = ?", new String[]{email});
-        return cursor.getCount() > 0;
+        try (Cursor cursor = DB.rawQuery(
+                "SELECT * FROM "+TABLE_NAME+" WHERE "+COLUMN_EMAIL+" = ?", new String[]{email})){
+            if (cursor != null && cursor.moveToFirst())
+                return cursor.getCount() > 0;
+        }
+        return false;
     }
 
+    //Check if the password is correct, call checkRecord() first before this
     public Boolean validate(String email, String passwd) {
         SQLiteDatabase DB = this.getReadableDatabase();
-        @SuppressLint("Recycle") Cursor cursor = DB.rawQuery(
-                "SELECT * FROM "+TABLE_NAME+" WHERE "+COLUMN_EMAIL+" = ? and "+COLUMN_PASSWD+" = ?", new String[]{email, passwd});
-        return cursor.getCount() > 0;
+        try (Cursor cursor = DB.rawQuery(
+                "SELECT * FROM "+TABLE_NAME+" WHERE "+
+                        COLUMN_EMAIL+" = ? and "+COLUMN_PASSWD+" = ?", new String[]{email, passwd})){
+            if (cursor != null && cursor.moveToFirst())
+                return cursor.getCount() > 0;
+        }
+        return false;
     }
 
+    //Get user data for lobby, [1]Username [2]Stage [3]Point
+    public void getInfo(String email, String[] getBack) {
+        SQLiteDatabase DB = this.getReadableDatabase();
+        try (Cursor cursor = DB.rawQuery(
+                "SELECT "+COLUMN2_USERNAME+", "+COLUMN2_STAGE+", "+COLUMN2_POINT+" FROM " +
+                        TABLE2_NAME + " WHERE " + COLUMN2_EMAIL + " = ?", new String[]{email})) {
+            if (cursor != null && cursor.moveToFirst()) {
+                getBack[1] = cursor.getString(0);
+                getBack[2] = cursor.getString(1);
+                getBack[3] = cursor.getString(2);
+            }
+        }
+    }
+
+    //Get all users' data for scoreboard, [1]Username [2]Stage [3]Point
+    public void getAllInfo(String[][] getBack) {
+        SQLiteDatabase DB = this.getReadableDatabase();
+        try (Cursor cursor = DB.rawQuery(
+                "SELECT "+COLUMN2_USERNAME+", "+COLUMN2_STAGE+", "+COLUMN2_POINT+" FROM "+TABLE2_NAME, null)) {
+            int i = 0;
+            while (cursor != null && cursor.moveToNext()) {
+                if (getBack[i] == null) {
+                    getBack[i] = new String[3];
+                }
+                getBack[i][0] = cursor.getString(0);
+                getBack[i][1] = cursor.getString(1);
+                getBack[i][2] = cursor.getString(2);
+
+                i++;
+            }
+        }
+    }
+
+    //Update Stage and Point after completing each level
+    public Boolean updateStatus(String email, String stage, String point) {
+        SQLiteDatabase DB = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(COLUMN2_STAGE, stage);
+        contentValues.put(COLUMN2_POINT, point);
+        long result = DB.update(TABLE2_NAME, contentValues, COLUMN2_EMAIL+"=?", new String[]{email});
+        return result != -1;
+    }
 }

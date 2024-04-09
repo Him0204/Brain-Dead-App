@@ -35,21 +35,6 @@
         android:src="@drawable/g2_crying_baby" />
 
     <ImageButton
-        android:id="@+id/imageButton_nipple"
-        android:layout_width="wrap_content"
-        android:layout_height="50dp"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentBottom="true"
-        android:layout_centerInParent="true"
-        android:layout_marginStart="9dp"
-        android:layout_marginEnd="100dp"
-        android:layout_marginBottom="333dp"
-        android:background="?android:attr/activatedBackgroundIndicator"
-        android:scaleType="fitCenter"
-        android:src="@drawable/g2_nipple" />
-
-    <ImageButton
         android:id="@+id/imageButton_toy"
         android:layout_width="wrap_content"
         android:layout_height="90dp"
@@ -76,5 +61,20 @@
         android:background="?android:attr/activatedBackgroundIndicator"
         android:scaleType="fitCenter"
         android:src="@drawable/g2_toy2" />
+
+    <ImageButton
+        android:id="@+id/imageButton_toy3"
+        android:layout_width="wrap_content"
+        android:layout_height="50dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_centerInParent="true"
+        android:layout_marginStart="9dp"
+        android:layout_marginEnd="100dp"
+        android:layout_marginBottom="333dp"
+        android:background="?android:attr/activatedBackgroundIndicator"
+        android:scaleType="fitCenter"
+        android:src="@drawable/g2_nipple" />
 
 </RelativeLayout>

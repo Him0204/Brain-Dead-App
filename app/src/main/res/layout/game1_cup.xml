@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".Game1">
+
+    <include
+        layout="@layout/game_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <TextView
+        android:id="@+id/textView_cup"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="150dp"
+        android:layout_centerHorizontal="true"
+        android:text="1. Fill the cup to the top"
+        android:textColor="@color/black"
+        android:textSize="24sp"
+        android:textStyle="bold" />
+
+    <ImageButton
+        android:id="@+id/imageButton_EmptyCup"
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentBottom="true"
+        android:layout_centerInParent="true"
+        android:layout_marginStart="58dp"
+        android:layout_marginBottom="174dp"
+        android:background="?android:attr/activatedBackgroundIndicator"
+        android:contentDescription="Cup"
+        android:scaleType="fitCenter"
+        android:src="@drawable/g1_empty_cup" />
+
+    <ImageButton
+        android:id="@+id/imageButton_kettle"
+        android:layout_width="wrap_content"
+        android:layout_height="200dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_centerInParent="true"
+        android:layout_marginStart="131dp"
+        android:layout_marginEnd="-21dp"
+        android:layout_marginBottom="242dp"
+        android:background="?android:attr/activatedBackgroundIndicator"
+        android:contentDescription="Kettle"
+        android:scaleType="fitCenter"
+        android:src="@drawable/g1_kettle" />
+
+</RelativeLayout>

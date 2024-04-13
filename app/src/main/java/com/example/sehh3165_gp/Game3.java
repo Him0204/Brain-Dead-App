@@ -1,17 +1,21 @@
 package com.example.sehh3165_gp;
 
-import android.content.Context;
 import android.content.Intent;
-import android.media.AudioManager;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.os.Bundle;
-import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
-public class Game3 extends AppCompatActivity implements View.OnClickListener, View.OnTouchListener {
+public class Game3 extends AppCompatActivity implements View.OnClickListener, View.OnTouchListener, SensorEventListener {
+
+    private SensorManager sensorManager;
+    private Sensor lightSensor;
 
     float xAxis, yAxis, buttonX, buttonY;
     int lastAction;
@@ -25,6 +29,8 @@ public class Game3 extends AppCompatActivity implements View.OnClickListener, Vi
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.game3_sleep);
+        sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
+        lightSensor = sensorManager.getDefaultSensor(Sensor.TYPE_LIGHT);
 
         Bundle extras = getIntent().getExtras();
         email = extras != null ? extras.getString("Email") : null;
@@ -119,14 +125,24 @@ public class Game3 extends AppCompatActivity implements View.OnClickListener, Vi
     }
 
     @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        AudioManager audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
-        boolean isMusicMute = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC) == 0;
-        if (keyCode == KeyEvent.KEYCODE_VOLUME_DOWN && isMusicMute) {
-            win();
-            return super.onKeyDown(keyCode, event);
+    protected void onResume() {
+        super.onResume();
+        sensorManager.registerListener(this, lightSensor, SensorManager.SENSOR_DELAY_NORMAL);
+    }
+
+    @Override
+    public void onSensorChanged(SensorEvent event) {
+        if (event.sensor.getType() == Sensor.TYPE_LIGHT) {
+            float lux = event.values[0];
+            if (lux == 0) {
+                win();
+            }
         }
-        return super.onKeyDown(keyCode, event);
+    }
+
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int accuracy) {
+        //
     }
 
     private void win() {

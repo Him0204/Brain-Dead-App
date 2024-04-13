@@ -28,5 +28,6 @@
             android:exported="true" />
         <activity android:name=".Game3" />
         <activity android:name=".Game4" />
+        <service android:name=".BackgroundMusic" />
     </application>
 </manifest>

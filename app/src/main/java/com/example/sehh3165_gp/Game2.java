@@ -1,7 +1,10 @@
 package com.example.sehh3165_gp;
 
+import android.content.Context;
 import android.content.Intent;
+import android.media.AudioManager;
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageButton;
@@ -15,6 +18,7 @@ public class Game2 extends AppCompatActivity implements View.OnClickListener, Vi
 
     ImageButton home, sound, game_hint, game_reset, next;
     ImageButton cryingBaby, toy, toy2, toy3;
+    AudioManager audioManager;
 
     String email;
 
@@ -23,10 +27,8 @@ public class Game2 extends AppCompatActivity implements View.OnClickListener, Vi
         super.onCreate(savedInstanceState);
         setContentView(R.layout.game2_baby);
 
-        /*
         Bundle extras = getIntent().getExtras();
         email = extras != null ? extras.getString("Email") : null;
-        */
 
         home = findViewById(R.id.imageButton_home);
         sound = findViewById(R.id.imageButton_sound);
@@ -88,16 +90,22 @@ public class Game2 extends AppCompatActivity implements View.OnClickListener, Vi
             startActivity(i);
         }
         else if (v.getId() == R.id.imageButton_sound) {
-            Toast.makeText(this, "Btn Clicked", Toast.LENGTH_SHORT).show();
+            Intent musicIntent = new Intent(this, BackgroundMusic.class);
+            stopService(musicIntent);
         }
         else if (v.getId() == R.id.imageButton_hint) {
-            Toast.makeText(Game2.this, "", Toast.LENGTH_SHORT).show();
+            Toast.makeText(Game2.this, "Think out of the box", Toast.LENGTH_SHORT).show();
         }
         else if (v.getId() == R.id.imageButton_reset) {
-            Toast.makeText(this, "Btn Clicked", Toast.LENGTH_SHORT).show();
+            Intent i = new Intent(this, Game2.class);
+            i.putExtra("Email", email);
+            startActivity(i);
+            finish();
         }
         else if (v.getId() == R.id.imageButton_next) {
-            Toast.makeText(this, "Btn Clicked", Toast.LENGTH_SHORT).show();
+            Intent i = new Intent(Game2.this, Game3.class);
+            i.putExtra("Email", email);
+            startActivity(i);
         }
     }
 
@@ -115,6 +123,22 @@ public class Game2 extends AppCompatActivity implements View.OnClickListener, Vi
 
         return !(firstPosition[0] > secondViewRight || firstViewRight < secondPosition[0] ||
                 firstPosition[1] > secondViewBottom || firstViewBottom < secondPosition[1]);
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        AudioManager audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+        boolean isMusicMute = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC) == 0;
+        if (keyCode == KeyEvent.KEYCODE_VOLUME_DOWN && isMusicMute) {
+            win();
+            return super.onKeyDown(keyCode, event);
+        }
+        return super.onKeyDown(keyCode, event);
+    }
+
+    private void win() {
+        Toast.makeText(this,  "v", Toast.LENGTH_SHORT).show();
+        next.setVisibility(View.VISIBLE);
     }
 
 }

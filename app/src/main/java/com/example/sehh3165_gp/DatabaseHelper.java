@@ -9,7 +9,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
     private static final int DATABASE_VERSION = 1;
-    private static final String DATABASE_NAME = "_DB";
+    private static final String DATABASE_NAME = "BrainDead_DB";
 
     protected static final String TABLE_NAME = "login";
     private static final String COLUMN_EMAIL = "email";

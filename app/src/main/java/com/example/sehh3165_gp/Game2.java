@@ -10,12 +10,12 @@ import androidx.appcompat.app.AppCompatActivity;
 
 public class Game2 extends AppCompatActivity implements View.OnClickListener, View.OnTouchListener {
 
-    float xAxis;
-    float yAxis;
+    float xAxis, yAxis, buttonX, buttonY;
     int lastAction;
 
     ImageButton home, sound, game_hint, game_reset, next;
     ImageButton cryingBaby, toy, toy2, toy3;
+
     String email;
 
     @Override
@@ -53,8 +53,10 @@ public class Game2 extends AppCompatActivity implements View.OnClickListener, Vi
     public boolean onTouch(View v, MotionEvent event) {
         switch (event.getActionMasked()) {
             case MotionEvent.ACTION_DOWN:
-                xAxis = v.getX() - event.getRawX();
-                yAxis = v.getY() - event.getRawY();
+                buttonX = v.getX();
+                buttonY = v.getY();
+                xAxis = buttonX - event.getRawX();
+                yAxis = buttonY - event.getRawY();
                 lastAction = MotionEvent.ACTION_DOWN;
                 break;
             case MotionEvent.ACTION_MOVE:
@@ -63,10 +65,13 @@ public class Game2 extends AppCompatActivity implements View.OnClickListener, Vi
                 lastAction = MotionEvent.ACTION_MOVE;
                 break;
             case MotionEvent.ACTION_UP:
-                if (lastAction == MotionEvent.ACTION_DOWN) {
-                    // Set On Click Event
+                if (lastAction == MotionEvent.ACTION_MOVE) {
+                    if (Overlapped(v, cryingBaby)) {
+                        Toast.makeText(this, "X", Toast.LENGTH_SHORT).show();
+                    }
                     v.performClick();
-                    Toast.makeText(this, "Btn Clicked", Toast.LENGTH_SHORT).show();
+                    v.setX(buttonX);
+                    v.setY(buttonY);
                 }
                 break;
             default:
@@ -96,9 +101,7 @@ public class Game2 extends AppCompatActivity implements View.OnClickListener, Vi
         }
     }
 
-
-    /*
-    private boolean isViewOverlapping(View firstView, View secondView) {
+    private boolean Overlapped(View firstView, View secondView) {
         int[] firstPosition = new int[2];
         int[] secondPosition = new int[2];
 
@@ -113,5 +116,5 @@ public class Game2 extends AppCompatActivity implements View.OnClickListener, Vi
         return !(firstPosition[0] > secondViewRight || firstViewRight < secondPosition[0] ||
                 firstPosition[1] > secondViewBottom || firstViewBottom < secondPosition[1]);
     }
-    */
+
 }

@@ -36,6 +36,18 @@
         android:src="@drawable/g1_empty_cup" />
 
     <ImageButton
+        android:id="@+id/imageButton_FullCup"
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:background="?android:attr/activatedBackgroundIndicator"
+        android:scaleType="fitCenter"
+        android:visibility="invisible"
+        android:focusable="false"
+        android:src="@drawable/g1_full_cup" />
+
+    <ImageButton
         android:id="@+id/imageButton_kettle"
         android:layout_width="wrap_content"
         android:layout_height="200dp"

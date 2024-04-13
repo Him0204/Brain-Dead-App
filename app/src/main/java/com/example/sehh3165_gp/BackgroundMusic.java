@@ -3,16 +3,13 @@ package com.example.sehh3165_gp;
 import android.app.Service;
 import android.content.Intent;
 import android.media.MediaPlayer;
+import android.os.Binder;
 import android.os.IBinder;
 
 public class BackgroundMusic extends Service {
 
     private MediaPlayer player;
-
-    @Override
-    public IBinder onBind(Intent intent) {
-        return null;
-    }
+    private final IBinder binder = (IBinder) new LocalBinder();
 
     @Override
     public void onCreate() {
@@ -37,5 +34,20 @@ public class BackgroundMusic extends Service {
             player.stop();
             player.release();
         }
+    }
+
+    public class LocalBinder extends Binder {
+        BackgroundMusic getService() {
+            return BackgroundMusic.this;
+        }
+    }
+
+    @Override
+    public IBinder onBind(Intent intent) {
+        return binder;
+    }
+
+    public boolean isMusicPlaying() {
+        return player != null && player.isPlaying();
     }
 }

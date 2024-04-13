@@ -28,7 +28,9 @@
         android:layout_centerVertical="true"
         android:background="?android:attr/activatedBackgroundIndicator"
         android:scaleType="fitCenter"
-        android:src="@drawable/g3_insomnia" />
+        android:src="@drawable/g3_insomnia"
+        android:visibility="visible"
+        android:focusable = "true"/>
 
     <ImageButton
         android:id="@+id/imageButton_aromatherapy"
@@ -43,6 +45,17 @@
         android:background="?android:attr/activatedBackgroundIndicator"
         android:scaleType="fitCenter"
         android:src="@drawable/g3_aromatherapy" />
+
+    <ImageButton
+        android:id="@+id/imageButton_sleeping"
+        android:layout_width="wrap_content"
+        android:layout_height="250dp"
+        android:layout_centerVertical="true"
+        android:background="?android:attr/activatedBackgroundIndicator"
+        android:scaleType="fitCenter"
+        android:src="@drawable/g3_sleeping"
+        android:visibility="invisible"
+        android:focusable = "false"/>
 
     <ImageButton
         android:id="@+id/imageButton_mp3"

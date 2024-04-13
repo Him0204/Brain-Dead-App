@@ -18,18 +18,31 @@
         android:id="@+id/imageButton_sound"
         android:layout_width="40dp"
         android:layout_height="40dp"
-        android:layout_marginStart="15dp"
+        android:layout_marginStart="20dp"
         android:layout_marginTop="90dp"
         android:layout_toEndOf="@+id/imageButton_home"
         android:background="@android:drawable/screen_background_light"
         android:scaleType="fitCenter"
+        android:visibility="visible"
         android:src="@drawable/setting_speaker" />
+
+    <ImageButton
+        android:id="@+id/imageButton_mute"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="90dp"
+        android:layout_toEndOf="@+id/imageButton_home"
+        android:background="@android:drawable/screen_background_light"
+        android:scaleType="fitCenter"
+        android:visibility="invisible"
+        android:src="@drawable/setting_mute" />
 
     <ImageButton
         android:id="@+id/imageButton_hint"
         android:layout_width="40dp"
         android:layout_height="40dp"
-        android:layout_marginStart="15dp"
+        android:layout_marginStart="20dp"
         android:layout_marginTop="90dp"
         android:layout_toEndOf="@+id/imageButton_sound"
         android:background="@android:drawable/screen_background_light"
@@ -40,23 +53,11 @@
         android:id="@+id/imageButton_reset"
         android:layout_width="40dp"
         android:layout_height="40dp"
-        android:layout_marginStart="15dp"
+        android:layout_marginStart="20dp"
         android:layout_marginTop="90dp"
         android:layout_toEndOf="@+id/imageButton_hint"
         android:background="@android:drawable/screen_background_light"
         android:scaleType="fitCenter"
         android:src="@drawable/setting_reset" />
-
-    <ImageButton
-        android:id="@+id/imageButton_next"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:layout_marginStart="15dp"
-        android:layout_marginTop="90dp"
-        android:layout_toEndOf="@+id/imageButton_reset"
-        android:visibility="gone"
-        android:background="@android:drawable/screen_background_light"
-        android:scaleType="fitCenter"
-        android:src="@drawable/setting_next" />
 
 </RelativeLayout>

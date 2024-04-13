@@ -1,9 +1,12 @@
 package com.example.sehh3165_gp;
 
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.media.AudioManager;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
@@ -15,10 +18,10 @@ public class Game2 extends AppCompatActivity implements View.OnClickListener, Vi
 
     float xAxis, yAxis, buttonX, buttonY;
     int lastAction;
+    private boolean isBound = false, isPlaying;
 
-    ImageButton home, sound, game_hint, game_reset, next;
-    ImageButton cryingBaby, toy, toy2, toy3;
-    AudioManager audioManager;
+    ImageButton home, sound, mute, game_hint, game_reset;
+    ImageButton cryingBaby, smilingBaby, toy, toy2, toy3;
 
     String email;
 
@@ -32,16 +35,18 @@ public class Game2 extends AppCompatActivity implements View.OnClickListener, Vi
 
         home = findViewById(R.id.imageButton_home);
         sound = findViewById(R.id.imageButton_sound);
+        mute = findViewById(R.id.imageButton_mute);
         game_hint = findViewById(R.id.imageButton_hint);
         game_reset = findViewById(R.id.imageButton_reset);
-        next = findViewById(R.id.imageButton_next);
+
         home.setOnClickListener(this);
+        mute.setOnClickListener(this);
         sound.setOnClickListener(this);
         game_hint.setOnClickListener(this);
         game_reset.setOnClickListener(this);
-        next.setOnClickListener(this);
 
         cryingBaby = findViewById(R.id.imageButton_crying_baby);
+        smilingBaby = findViewById(R.id.imageButton_stop_crying_baby);
         toy = findViewById(R.id.imageButton_toy);
         toy2 = findViewById(R.id.imageButton_toy2);
         toy3 = findViewById(R.id.imageButton_toy3);
@@ -50,6 +55,21 @@ public class Game2 extends AppCompatActivity implements View.OnClickListener, Vi
         toy3.setOnTouchListener(this);
 
     }
+
+    private ServiceConnection connection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName className, IBinder service) {
+            BackgroundMusic.LocalBinder binder = (BackgroundMusic.LocalBinder) service;
+            BackgroundMusic musicService = binder.getService();
+            isBound = true;
+            isPlaying = musicService.isMusicPlaying();
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName arg0) {
+            isBound = false;
+        }
+    };
 
     @Override
     public boolean onTouch(View v, MotionEvent event) {
@@ -91,6 +111,10 @@ public class Game2 extends AppCompatActivity implements View.OnClickListener, Vi
         }
         else if (v.getId() == R.id.imageButton_sound) {
             Intent musicIntent = new Intent(this, BackgroundMusic.class);
+            startService(musicIntent);
+        }
+        else if (v.getId() == R.id.imageButton_mute) {
+            Intent musicIntent = new Intent(this, BackgroundMusic.class);
             stopService(musicIntent);
         }
         else if (v.getId() == R.id.imageButton_hint) {
@@ -101,11 +125,6 @@ public class Game2 extends AppCompatActivity implements View.OnClickListener, Vi
             i.putExtra("Email", email);
             startActivity(i);
             finish();
-        }
-        else if (v.getId() == R.id.imageButton_next) {
-            Intent i = new Intent(Game2.this, Game3.class);
-            i.putExtra("Email", email);
-            startActivity(i);
         }
     }
 
@@ -138,7 +157,24 @@ public class Game2 extends AppCompatActivity implements View.OnClickListener, Vi
 
     private void win() {
         Toast.makeText(this,  "v", Toast.LENGTH_SHORT).show();
-        next.setVisibility(View.VISIBLE);
+        cryingBaby.setVisibility(View.INVISIBLE);
+        smilingBaby.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        Intent intent = new Intent(this, BackgroundMusic.class);
+        bindService(intent, connection, Context.BIND_AUTO_CREATE);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (isBound) {
+            unbindService(connection);
+            isBound = false;
+        }
     }
 
 }

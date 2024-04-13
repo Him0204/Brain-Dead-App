@@ -1,6 +1,5 @@
 package com.example.sehh3165_gp;
 
-import android.annotation.SuppressLint;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -19,7 +18,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String COLUMN2_EMAIL = "email";
     private static final String COLUMN2_USERNAME = "username";
     private static final String COLUMN2_STAGE = "stage";
-    private static final String COLUMN2_POINT = "point";
+    private static final String COLUMN2_TIME = "time";
 
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -35,8 +34,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 COLUMN2_EMAIL + " PRIMARY KEY, " +
                 COLUMN2_USERNAME + " TEXT, " +
                 COLUMN2_STAGE + " TEXT, " +
-                COLUMN2_POINT + " TEXT)";
+                COLUMN2_TIME + " TEXT)";
         db.execSQL(query);
+        Testcase();
     }
 
     @Override
@@ -57,7 +57,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         contentValues2.put(COLUMN2_EMAIL, email);
         contentValues2.put(COLUMN2_USERNAME, username);
         contentValues2.put(COLUMN2_STAGE, 1);
-        contentValues2.put(COLUMN2_POINT, 0);
+        contentValues2.put(COLUMN2_TIME, 0);
         long result2 = DB.insert(TABLE2_NAME, null, contentValues2);
 
         return result1 != -1 && result2 != -1;
@@ -97,11 +97,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return false;
     }
 
-    //Get user data for lobby, [0]Username [1]Stage [2]Point
+    //Get user data for lobby, [0]Username [1]Stage [2]Time used
     public void getInfo(String email, String[] getBack) {
         SQLiteDatabase DB = this.getReadableDatabase();
         try (Cursor cursor = DB.rawQuery(
-                "SELECT "+COLUMN2_USERNAME+", "+COLUMN2_STAGE+", "+COLUMN2_POINT+" FROM " +
+                "SELECT "+COLUMN2_USERNAME+", "+COLUMN2_STAGE+", "+COLUMN2_TIME+" FROM " +
                         TABLE2_NAME + " WHERE " + COLUMN2_EMAIL + " = ?", new String[]{email})) {
             if (cursor != null && cursor.moveToFirst()) {
                 getBack[0] = cursor.getString(0);
@@ -111,11 +111,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
     }
 
-    //Get all users' data for scoreboard, [1]Username [2]Stage [3]Point
+    //Get all users' data for scoreboard, [1]Username [2]Stage [3]Time used
     public void getAllInfo(String[][] getBack) {
         SQLiteDatabase DB = this.getReadableDatabase();
         try (Cursor cursor = DB.rawQuery(
-                "SELECT "+COLUMN2_USERNAME+", "+COLUMN2_STAGE+", "+COLUMN2_POINT+" FROM "+TABLE2_NAME, null)) {
+                "SELECT "+COLUMN2_USERNAME+", "+COLUMN2_STAGE+", "+COLUMN2_TIME+" FROM "+TABLE2_NAME+
+                        " ORDER BY "+COLUMN2_STAGE+" DESC, "+COLUMN2_TIME+" ASC", null)) {
             int i = 0;
             while (cursor != null && cursor.moveToNext()) {
                 if (getBack[i] == null) {
@@ -131,12 +132,25 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     //Update Stage and Point after completing each level
-    public Boolean updateStatus(String email, String stage, String point) {
+    public Boolean updateStatus(String email, String stage, String time) {
         SQLiteDatabase DB = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put(COLUMN2_STAGE, stage);
-        contentValues.put(COLUMN2_POINT, point);
+        contentValues.put(COLUMN2_TIME, time);
         long result = DB.update(TABLE2_NAME, contentValues, COLUMN2_EMAIL+"=?", new String[]{email});
         return result != -1;
+    }
+
+    private void Testcase() {
+        inputData("Test1", "abcabcabc", "Test1");
+        inputData("Test3", "abcabcabc", "Test3");
+        inputData("Test5", "abcabcabc", "Test5");
+        inputData("Test2", "abcabcabc", "Test2");
+        inputData("Test4", "abcabcabc", "Test4");
+        updateStatus("Test1", "1","253");
+        updateStatus("Test5", "6","572");
+        updateStatus("Test3", "4","447");
+        updateStatus("Test2", "4","273");
+        updateStatus("Test4", "8","495");
     }
 }

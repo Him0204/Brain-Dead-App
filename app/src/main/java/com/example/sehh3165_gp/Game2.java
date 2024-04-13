@@ -1,19 +1,18 @@
 package com.example.sehh3165_gp;
 
 import android.content.Intent;
-import android.graphics.Rect;
 import android.os.Bundle;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageButton;
-import android.widget.RelativeLayout;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 public class Game2 extends AppCompatActivity implements View.OnClickListener, View.OnTouchListener {
 
-    private int deltaX;
-    private int deltaY;
+    float xAxis;
+    float yAxis;
+    int lastAction;
 
     ImageButton home, sound, game_hint, game_reset, next;
     ImageButton cryingBaby, toy, toy2, toy3;
@@ -22,10 +21,12 @@ public class Game2 extends AppCompatActivity implements View.OnClickListener, Vi
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.game1_cup);
+        setContentView(R.layout.game2_baby);
 
-        //Bundle extras = getIntent().getExtras();
-        //email = extras != null ? extras.getString("Email") : null;
+        /*
+        Bundle extras = getIntent().getExtras();
+        email = extras != null ? extras.getString("Email") : null;
+        */
 
         home = findViewById(R.id.imageButton_home);
         sound = findViewById(R.id.imageButton_sound);
@@ -45,6 +46,33 @@ public class Game2 extends AppCompatActivity implements View.OnClickListener, Vi
         toy.setOnTouchListener(this);
         toy2.setOnTouchListener(this);
         toy3.setOnTouchListener(this);
+
+    }
+
+    @Override
+    public boolean onTouch(View v, MotionEvent event) {
+        switch (event.getActionMasked()) {
+            case MotionEvent.ACTION_DOWN:
+                xAxis = v.getX() - event.getRawX();
+                yAxis = v.getY() - event.getRawY();
+                lastAction = MotionEvent.ACTION_DOWN;
+                break;
+            case MotionEvent.ACTION_MOVE:
+                v.setX(event.getRawX() + xAxis);
+                v.setY(event.getRawY() + yAxis);
+                lastAction = MotionEvent.ACTION_MOVE;
+                break;
+            case MotionEvent.ACTION_UP:
+                if (lastAction == MotionEvent.ACTION_DOWN) {
+                    // Set On Click Event
+                    v.performClick();
+                    Toast.makeText(this, "Btn Clicked", Toast.LENGTH_SHORT).show();
+                }
+                break;
+            default:
+                return false;
+        }
+        return true;
     }
 
     @Override
@@ -55,53 +83,35 @@ public class Game2 extends AppCompatActivity implements View.OnClickListener, Vi
             startActivity(i);
         }
         else if (v.getId() == R.id.imageButton_sound) {
-            pass
+            Toast.makeText(this, "Btn Clicked", Toast.LENGTH_SHORT).show();
         }
         else if (v.getId() == R.id.imageButton_hint) {
             Toast.makeText(Game2.this, "", Toast.LENGTH_SHORT).show();
         }
         else if (v.getId() == R.id.imageButton_reset) {
-            pass
+            Toast.makeText(this, "Btn Clicked", Toast.LENGTH_SHORT).show();
         }
         else if (v.getId() == R.id.imageButton_next) {
-            pass
+            Toast.makeText(this, "Btn Clicked", Toast.LENGTH_SHORT).show();
         }
     }
 
-    @Override
-    public boolean onTouch(View v, MotionEvent event) {
-        final int X = (int) event.getRawX();
-        final int Y = (int) event.getRawY();
-        switch (event.getAction() & MotionEvent.ACTION_MASK) {
-            case MotionEvent.ACTION_DOWN:
-                RelativeLayout.LayoutParams lParams = (RelativeLayout.LayoutParams) v.getLayoutParams();
-                deltaX = X - lParams.leftMargin;
-                deltaY = Y - lParams.topMargin;
-                break;
-            case MotionEvent.ACTION_MOVE:
-                RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) v.getLayoutParams();
-                layoutParams.leftMargin = X - deltaX;
-                layoutParams.topMargin = Y - deltaY;
-                v.setLayoutParams(layoutParams);
-                break;
 
-            case MotionEvent.ACTION_UP:
-                if (isOverlap(v, cryingBaby)) {
-                    Toast.makeText(this, "Button Overlapped!", Toast.LENGTH_SHORT).show();
-                }
-                break;
-        }
+    /*
+    private boolean isViewOverlapping(View firstView, View secondView) {
+        int[] firstPosition = new int[2];
+        int[] secondPosition = new int[2];
 
-        return true;
+        firstView.getLocationOnScreen(firstPosition);
+        secondView.getLocationOnScreen(secondPosition);
+
+        int firstViewRight = firstPosition[0] + firstView.getWidth();
+        int firstViewBottom = firstPosition[1] + firstView.getHeight();
+        int secondViewRight = secondPosition[0] + secondView.getWidth();
+        int secondViewBottom = secondPosition[1] + secondView.getHeight();
+
+        return !(firstPosition[0] > secondViewRight || firstViewRight < secondPosition[0] ||
+                firstPosition[1] > secondViewBottom || firstViewBottom < secondPosition[1]);
     }
-
-    private boolean isOverlap(View view1, View view2) {
-        Rect rect1 = new Rect();
-        Rect rect2 = new Rect();
-
-        view1.getHitRect(rect1);
-        view2.getHitRect(rect2);
-
-        return Rect.intersects(rect1, rect2);
-    }
+    */
 }

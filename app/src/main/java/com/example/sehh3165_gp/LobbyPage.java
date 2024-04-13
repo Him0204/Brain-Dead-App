@@ -16,19 +16,6 @@ public class LobbyPage extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.lobby);
 
-        DatabaseHelper DB = new DatabaseHelper(getApplicationContext());
 
-        TextView username = findViewById(R.id.username);
-        username.setText(DB.getInfo(passcontent);
-
-        Button scoreboard = (Button) findViewById(R.id.button_scoreboard);
-        scoreboard.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent i = new Intent(LobbyPage.this, ScoreboardPage.class);
-                //i.putExtra("Username", username);
-                startActivity(i);
-            }
-        });
     }
 }

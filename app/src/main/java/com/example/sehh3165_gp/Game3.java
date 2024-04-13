@@ -15,7 +15,7 @@ public class Game3 extends AppCompatActivity implements View.OnClickListener {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.game1_emptyCup);
+        setContentView(R.layout.game3_sleep);
 
         Bundle extras = getIntent().getExtras();
         email = extras != null ? extras.getString("Email") : null;
@@ -41,16 +41,16 @@ public class Game3 extends AppCompatActivity implements View.OnClickListener {
             startActivity(i);
         }
         else if (v.getId() == R.id.imageButton_sound) {
-            pass
+            Toast.makeText(this, "Btn Clicked", Toast.LENGTH_SHORT).show();
         }
         else if (v.getId() == R.id.imageButton_hint) {
             Toast.makeText(Game3.this, "", Toast.LENGTH_SHORT).show();
         }
         else if (v.getId() == R.id.imageButton_reset) {
-            pass
+            Toast.makeText(this, "Btn Clicked", Toast.LENGTH_SHORT).show();
         }
         else if (v.getId() == R.id.imageButton_next) {
-            pass
+            Toast.makeText(this, "Btn Clicked", Toast.LENGTH_SHORT).show();
         }
     }
 }

@@ -1,15 +1,25 @@
 package com.example.sehh3165_gp;
 
+import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.Network;
+import android.net.NetworkCapabilities;
 import android.os.Bundle;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
-public class Game4 extends AppCompatActivity implements View.OnClickListener {
+public class Game4 extends AppCompatActivity implements View.OnClickListener, View.OnTouchListener {
 
-    ImageButton home, sound, game_hint, game_reset, next;
+    float xAxis, yAxis, buttonX, buttonY;
+    int lastAction;
+
+    ImageButton home, sound, game_hint, game_reset;
+    ImageButton networkPC, standalonePC, router;
+
     String email;
 
     @Override
@@ -24,13 +34,54 @@ public class Game4 extends AppCompatActivity implements View.OnClickListener {
         sound = findViewById(R.id.imageButton_sound);
         game_hint = findViewById(R.id.imageButton_hint);
         game_reset = findViewById(R.id.imageButton_reset);
-        next = findViewById(R.id.imageButton_next);
         home.setOnClickListener(this);
         sound.setOnClickListener(this);
         game_hint.setOnClickListener(this);
         game_reset.setOnClickListener(this);
-        next.setOnClickListener(this);
 
+        networkPC = findViewById(R.id.imageButton_computer);
+        standalonePC = findViewById(R.id.imageButton_no_wifi_computer);
+
+        if (isInternetAvailable()) {
+            networkPC.setVisibility(View.VISIBLE);
+        }
+        else {
+            standalonePC.setVisibility(View.VISIBLE);
+        }
+        router = findViewById(R.id.imageButton_router);
+        router.setOnTouchListener(this);
+
+    }
+
+    @Override
+    public boolean onTouch(View v, MotionEvent event) {
+        switch (event.getActionMasked()) {
+            case MotionEvent.ACTION_DOWN:
+                buttonX = v.getX();
+                buttonY = v.getY();
+                xAxis = buttonX - event.getRawX();
+                yAxis = buttonY - event.getRawY();
+                lastAction = MotionEvent.ACTION_DOWN;
+                break;
+            case MotionEvent.ACTION_MOVE:
+                v.setX(event.getRawX() + xAxis);
+                v.setY(event.getRawY() + yAxis);
+                lastAction = MotionEvent.ACTION_MOVE;
+                break;
+            case MotionEvent.ACTION_UP:
+                if (lastAction == MotionEvent.ACTION_MOVE) {
+                    if (Overlapped(v, networkPC) || Overlapped(v, standalonePC)) {
+                        Toast.makeText(this, "X", Toast.LENGTH_SHORT).show();
+                    }
+                    v.performClick();
+                    v.setX(buttonX);
+                    v.setY(buttonY);
+                }
+                break;
+            default:
+                return false;
+        }
+        return true;
     }
 
     @Override
@@ -41,16 +92,52 @@ public class Game4 extends AppCompatActivity implements View.OnClickListener {
             startActivity(i);
         }
         else if (v.getId() == R.id.imageButton_sound) {
-            Toast.makeText(this, "Btn Clicked", Toast.LENGTH_SHORT).show();
+            Intent musicIntent = new Intent(this, BackgroundMusic.class);
+            stopService(musicIntent);
         }
         else if (v.getId() == R.id.imageButton_hint) {
-            Toast.makeText(Game4.this, "", Toast.LENGTH_SHORT).show();
+            Toast.makeText(Game4.this, "Think out of the box", Toast.LENGTH_SHORT).show();
         }
         else if (v.getId() == R.id.imageButton_reset) {
-            Toast.makeText(this, "Btn Clicked", Toast.LENGTH_SHORT).show();
-        }
-        else if (v.getId() == R.id.imageButton_next) {
-            Toast.makeText(this, "Btn Clicked", Toast.LENGTH_SHORT).show();
+            Intent i = new Intent(this, Game4.class);
+            i.putExtra("Email", email);
+            startActivity(i);
+            finish();
         }
     }
+
+    private boolean Overlapped(View firstView, View secondView) {
+        int[] firstPosition = new int[2];
+        int[] secondPosition = new int[2];
+
+        firstView.getLocationOnScreen(firstPosition);
+        secondView.getLocationOnScreen(secondPosition);
+
+        int firstViewRight = firstPosition[0] + firstView.getWidth();
+        int firstViewBottom = firstPosition[1] + firstView.getHeight();
+        int secondViewRight = secondPosition[0] + secondView.getWidth();
+        int secondViewBottom = secondPosition[1] + secondView.getHeight();
+
+        return !(firstPosition[0] > secondViewRight || firstViewRight < secondPosition[0] ||
+                firstPosition[1] > secondViewBottom || firstViewBottom < secondPosition[1]);
+    }
+
+    private boolean isInternetAvailable() {
+        ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        if (connectivityManager != null) {
+            Network network = connectivityManager.getActiveNetwork();
+            if (network != null) {
+                NetworkCapabilities capabilities = connectivityManager.getNetworkCapabilities(network);
+                return capabilities != null && capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET);
+            }
+        }
+        return false;
+    }
+
+    private void win() {
+        Toast.makeText(this,  "v", Toast.LENGTH_SHORT).show();
+        //wakeBoy.setVisibility(View.INVISIBLE);
+        //sleepBoy.setVisibility(View.VISIBLE);
+    }
+
 }

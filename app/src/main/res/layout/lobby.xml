@@ -5,9 +5,136 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/background"
     tools:context=".LobbyPage">
 
 
+    <TextView
+        android:id='@+id/hello'
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="20dp"
+        android:text="Hello! Username"
+        android:textColor="@color/black"
+        android:textSize="30sp"
+        android:textStyle="bold"/>
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/hello"
+        android:layout_marginTop="40dp">
+
+        <ImageView
+            android:id="@+id/rectangle"
+            android:layout_width="match_parent"
+            android:layout_height="70dp"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:scaleType="centerCrop"
+            android:cropToPadding="true"
+            android:adjustViewBounds="true"
+            android:src="@drawable/rectangle"/>
+
+        <Button
+            android:id="@+id/button_scoreboard"
+            android:layout_width="wrap_content"
+            android:layout_height="50dp"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:background="@drawable/button_rectangle"
+            android:text="@string/scoreboard" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true"
+        android:id="@+id/levels">
+
+        <Button
+            android:id="@+id/button_lv1"
+            android:layout_width="82dp"
+            android:layout_height="65dp"
+            android:background="@drawable/button_rectangle2"
+            android:text="Level 1" />
+
+        <Button
+            android:id="@+id/button_lv2"
+            android:layout_width="82dp"
+            android:layout_height="65dp"
+            android:layout_marginLeft="50dp"
+            android:layout_toRightOf="@id/button_lv1"
+            android:background="@drawable/button_rectangle2"
+            android:text="Level 2" />
+
+        <Button
+            android:id="@+id/button_lv3"
+            android:layout_width="82dp"
+            android:layout_height="65dp"
+            android:layout_marginLeft="50dp"
+            android:layout_toRightOf="@id/button_lv2"
+            android:background="@drawable/button_rectangle2"
+            android:text="Level 3" />
+
+        <Button
+            android:id="@+id/button_lv4"
+            android:layout_width="82dp"
+            android:layout_height="65dp"
+            android:layout_marginTop="150dp"
+            android:background="@drawable/button_rectangle2"
+            android:text="Level 4" />
+
+        <Button
+            android:id="@+id/button_lv5"
+            android:layout_width="82dp"
+            android:layout_height="65dp"
+            android:layout_marginLeft="50dp"
+            android:layout_toRightOf="@id/button_lv4"
+            android:layout_marginTop="150dp"
+            android:background="@drawable/button_rectangle2"
+            android:text="Level 5" />
+
+        <Button
+            android:id="@+id/button_lv6"
+            android:layout_width="82dp"
+            android:layout_height="65dp"
+            android:layout_marginLeft="50dp"
+            android:layout_toRightOf="@id/button_lv5"
+            android:layout_marginTop="150dp"
+            android:background="@drawable/button_rectangle2"
+            android:text="Level 6" />
+
+        <Button
+            android:id="@+id/button_lv7"
+            android:layout_width="82dp"
+            android:layout_height="65dp"
+            android:layout_marginTop="300dp"
+            android:background="@drawable/button_rectangle2"
+            android:text="Level 7" />
+
+        <Button
+            android:id="@+id/button_lv8"
+            android:layout_width="82dp"
+            android:layout_height="65dp"
+            android:layout_marginLeft="50dp"
+            android:layout_toRightOf="@id/button_lv7"
+            android:layout_marginTop="300dp"
+            android:background="@drawable/button_rectangle2"
+            android:text="Level 8" />
+    </RelativeLayout>
+
+    <Button
+        android:id="@+id/button_continue"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="100dp"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/levels"
+        android:background="@drawable/button_rectangle"
+        android:text="CONTINUE" />
 
 
 </RelativeLayout>

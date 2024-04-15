@@ -98,7 +98,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     //Get user data for lobby, [0]Username [1]Stage [2]Time used
-    public void getInfo(String email, String[] getBack) {
+    public String getInfo(String email, int i) {
+        String[] getBack = new String[3];
         SQLiteDatabase DB = this.getReadableDatabase();
         try (Cursor cursor = DB.rawQuery(
                 "SELECT "+COLUMN2_USERNAME+", "+COLUMN2_STAGE+", "+COLUMN2_TIME+" FROM " +
@@ -109,6 +110,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 getBack[2] = cursor.getString(2);
             }
         }
+        return getBack[i];
     }
 
     //Get all users' data for scoreboard, [1]Username [2]Stage [3]Time used
@@ -142,15 +144,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     private void Testcase() {
-        inputData("Test1", "abcabcabc", "Test1");
-        inputData("Test3", "abcabcabc", "Test3");
-        inputData("Test5", "abcabcabc", "Test5");
-        inputData("Test2", "abcabcabc", "Test2");
-        inputData("Test4", "abcabcabc", "Test4");
-        updateStatus("Test1", "1","253");
-        updateStatus("Test5", "6","572");
-        updateStatus("Test3", "4","447");
-        updateStatus("Test2", "4","273");
-        updateStatus("Test4", "8","495");
+        Boolean Temp;
+        Temp = inputData("Test1", "abcabcabc", "Test1");
+        Temp = inputData("Test3", "abcabcabc", "Test3");
+        Temp = inputData("Test5", "abcabcabc", "Test5");
+        Temp = inputData("Test2", "abcabcabc", "Test2");
+        Temp = inputData("Test4", "abcabcabc", "Test4");
+        Temp = updateStatus("Test1", "1","253");
+        Temp = updateStatus("Test5", "6","572");
+        Temp = updateStatus("Test3", "4","447");
+        Temp = updateStatus("Test2", "4","273");
+        Temp = updateStatus("Test4", "8","495");
     }
 }

@@ -31,6 +31,17 @@ public class LoginPage extends AppCompatActivity implements View.OnClickListener
         forgetPw.setOnClickListener(this);
         signUp.setOnClickListener(this);
 
+        DatabaseHelper DB = new DatabaseHelper(this);
+        DB.inputData("Test1", "abc", "Test1");
+        DB.inputData("Test3", "abc", "Test3");
+        DB.inputData("Test5", "abc", "Test5");
+        DB.inputData("Test2", "abc", "Test2");
+        DB.inputData("Test4", "abc", "Test4");
+        DB.updateStatus("Test1", "1","253");
+        DB.updateStatus("Test5", "6","572");
+        DB.updateStatus("Test3", "4","447");
+        DB.updateStatus("Test2", "4","273");
+        DB.updateStatus("Test4", "8","495");
     }
 
     private boolean validate(String email, String passwd) {
@@ -44,10 +55,10 @@ public class LoginPage extends AppCompatActivity implements View.OnClickListener
             if (email.getText().toString().isEmpty() || passwd.getText().toString().isEmpty())
                 Toast.makeText(LoginPage.this, "Please fill in email/password", Toast.LENGTH_SHORT).show();
             else if (validate(email.getText().toString(), passwd.getText().toString())) {
-                email.setText("");
-                passwd.setText("");
                 Intent i = new Intent(LoginPage.this, LobbyPage.class);
                 i.putExtra("Email", email.getText().toString());
+                email.setText("");
+                passwd.setText("");
                 startActivity(i);
             }
             else {

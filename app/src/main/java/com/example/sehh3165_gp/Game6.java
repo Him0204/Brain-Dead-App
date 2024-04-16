@@ -1,76 +1,84 @@
 package com.example.sehh3165_gp;
 
+import androidx.appcompat.app.AppCompatActivity;
+
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ObjectAnimator;
-import android.app.Activity;
-import android.content.Intent;
 import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.Handler;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 import com.airbnb.lottie.LottieAnimationView;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class Game5 extends Activity implements View.OnTouchListener {
+public class stage6 extends AppCompatActivity implements View.OnTouchListener {
     private int deltaX;
     private int deltaY;
     String email;
     ViewGroup _root;
-    ImageButton glue;
-    ImageButton roof;
-    ImageButton garage;
-    ImageButton body;
-    ImageView house_result;
-    ImageView glue_result;
-    List<ImageButton> buttonArray = new ArrayList<ImageButton>();
+    ViewGroup gym_layout;
     View progress_menu;
+    ImageView dumbbell;
+    ImageView fat_guy;
+    ImageView slim_guy;
+    ImageView janitor;
+    ImageView vacuum;
+    ImageView protein;
+    ImageView vacuum_for_guy;
+    RelativeLayout janitor_dead;
+    List<ImageView> buttonArray = new ArrayList<ImageView>();
+    List<ImageView> buttonArray1 = new ArrayList<ImageView>();
     Handler handler;
+    Boolean first_overlap;
+
     LottieAnimationView animationView;
     Button button_continue;
     Button button_back_to_lobby;
     int time_taken;
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.game5_house);
+        setContentView(R.layout.stage6);
+        first_overlap = false;
+
         time_taken = 0; //delete this when synced!
         Bundle extras = getIntent().getExtras();
         email = extras.getString("email");
 
         DatabaseHelper dbHelper = new DatabaseHelper(getApplicationContext());
+
         _root = (ViewGroup)findViewById(R.id.relative_layout);
+        gym_layout = (ViewGroup)findViewById(R.id.gym_layout);
 
-        glue = (ImageButton) findViewById(R.id.imageButton_glue);
-        roof = (ImageButton) findViewById(R.id.imageButton_roof);
-        garage = (ImageButton) findViewById(R.id.imageButton_garage);
-        body = (ImageButton) findViewById(R.id.imageButton_body);
+        dumbbell = (ImageView) findViewById(R.id.image_dumbbell);
+        fat_guy = (ImageView) findViewById(R.id.fat_guy);
+        slim_guy = (ImageView) findViewById(R.id.slim_guy);
+        protein = (ImageView) findViewById(R.id.protein);
+        janitor = (ImageView) findViewById(R.id.janitor);
+        vacuum = (ImageView) findViewById(R.id.vacuum);
+        vacuum_for_guy = findViewById(R.id.vacuum_for_guy);
+        janitor_dead = (RelativeLayout) findViewById(R.id.janitor_dead);
 
-        buttonArray.add(glue);
-        buttonArray.add(roof);
-        buttonArray.add(garage);
-        buttonArray.add(body);
+        buttonArray.add(dumbbell);
+        buttonArray.add(vacuum);
 
-
-        glue.setOnTouchListener(this);
-        roof.setOnTouchListener(this);
-        garage.setOnTouchListener(this);
-        body.setOnTouchListener(this);
+        dumbbell.setOnTouchListener(this);
+        protein.setOnTouchListener(this);
     }
 
     @Override
@@ -91,22 +99,30 @@ public class Game5 extends Activity implements View.OnTouchListener {
                 break;
 
             case MotionEvent.ACTION_UP:
-                if (checkOverlap((ImageButton) v)) {
-                    house_result = (ImageView) findViewById(R.id.imageView_house_result);
-                    glue_result = (ImageView) findViewById(R.id.imageButton_glue_result);
-                    house_result.setVisibility(View.VISIBLE);
-                    glue_result.setVisibility(View.VISIBLE);
-                    glue.setVisibility(View.GONE);
-                    roof.setVisibility(View.GONE);
-                    garage.setVisibility(View.GONE);
-                    body.setVisibility(View.GONE);
+                if (checkOverlap((ImageView) v)) {
+                    janitor.setVisibility(View.GONE);
+                    vacuum.setVisibility(View.GONE);
+                    janitor_dead.setVisibility(View.VISIBLE);
+                    vacuum_for_guy.setVisibility(View.VISIBLE);
+
+                    buttonArray1.add(fat_guy);
+                    buttonArray1.add(vacuum_for_guy);
+
+                    // Set onTouchListener for vacuum
+                    vacuum_for_guy.setOnTouchListener(this);
+                    first_overlap = true;
+                } else if (first_overlap == true && checkOverlap1((ImageView) v)) {
+                    slim_guy.setVisibility(View.VISIBLE);
+                    vacuum_for_guy.setVisibility(View.GONE);
+                    fat_guy.setVisibility(View.GONE);
+                    vacuum.setVisibility(View.VISIBLE);
 
                     // Create a PopupWindow object
-                    PopupWindow popupWindow = new PopupWindow(Game5.this);
+                    PopupWindow popupWindow = new PopupWindow(stage6.this);
 
                     // Inflate the new layout
-                    LayoutInflater inflater = LayoutInflater.from(Game5.this);
-                    View newLayout = inflater.inflate(R.layout.progress_menu, null);
+                    LayoutInflater inflater = LayoutInflater.from(stage6.this);
+                    View newLayout = inflater.inflate(R.layout.progress_menu_6, null);
 
                     // Set the background of the PopupWindow to be semi-transparent
                     popupWindow.setBackgroundDrawable(new ColorDrawable(0xCC000000)); // Adjust the alpha value as needed
@@ -147,7 +163,7 @@ public class Game5 extends Activity implements View.OnTouchListener {
                                                     button_continue.setOnClickListener(new View.OnClickListener() {
                                                         @Override
                                                         public void onClick(View v) {
-                                                            Intent i = new Intent(Game5.this, Game6.class);
+                                                            Intent i = new Intent(stage5.this, stage6.class);
                                                             i.putExtra("email", email);
                                                             startActivity(i);
                                                         }
@@ -155,7 +171,7 @@ public class Game5 extends Activity implements View.OnTouchListener {
                                                     button_back_to_lobby.setOnClickListener(new View.OnClickListener() {
                                                         @Override
                                                         public void onClick(View v) {
-                                                            Intent i = new Intent(Game5.this, LobbyPage.class);
+                                                            Intent i = new Intent(stage5.this, LobbyPage.class);
                                                             i.putExtra("email", email);
                                                             startActivity(i);
                                                         }
@@ -182,10 +198,36 @@ public class Game5 extends Activity implements View.OnTouchListener {
         return true;
     }
 
-    private boolean checkOverlap(ImageButton button) {
+    private boolean checkOverlap(ImageView button) {
         boolean intersect = true;
         for (int i = 0; i < buttonArray.size(); i++) { //use an array to store the id of buttons and then array.length?
             View view = buttonArray.get(i); //first button to be overlapped, then the second and third
+            if (view != button) { //if compared button is not dragged button
+                int[] firstPosition = new int[2];
+                int[] secondPosition = new int[2];
+
+                button.getLocationOnScreen(firstPosition);
+                view.getLocationOnScreen(secondPosition);
+
+                // Rect constructor parameters: left, top, right, bottom
+                Rect rectButton = new Rect(firstPosition[0], firstPosition[1],
+                        firstPosition[0] + button.getMeasuredWidth(), firstPosition[1] + button.getMeasuredHeight());
+                Rect rectOtherButton = new Rect(secondPosition[0], secondPosition[1],
+                        secondPosition[0] + view.getMeasuredWidth(), secondPosition[1] + view.getMeasuredHeight());
+
+                if (!rectButton.intersect(rectOtherButton)) {
+                    intersect = false;
+                    break;
+                }
+            }
+        }
+        return intersect;
+    }
+
+    private boolean checkOverlap1(ImageView button) {
+        boolean intersect = true;
+        for (int i = 0; i < buttonArray1.size(); i++) { //use an array to store the id of buttons and then array.length?
+            View view = buttonArray1.get(i); //first button to be overlapped, then the second and third
             if (view != button) { //if compared button is not dragged button
                 int[] firstPosition = new int[2];
                 int[] secondPosition = new int[2];

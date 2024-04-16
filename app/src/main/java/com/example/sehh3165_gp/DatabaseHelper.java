@@ -30,17 +30,24 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        String query = "CREATE TABLE " + TABLE_NAME + " (" +
-                COLUMN_EMAIL + " PRIMARY KEY, " +
-                COLUMN_PASSWD + " TEXT)";
-        db.execSQL(query);
-        query = "CREATE TABLE " + TABLE2_NAME + " (" +
-                COLUMN2_EMAIL + " PRIMARY KEY, " +
-                COLUMN2_USERNAME + " TEXT, " +
-                COLUMN2_STAGE + " TEXT, " +
-                COLUMN2_TIME + " TEXT)";
-        db.execSQL(query);
-        Testcase();
+        db.beginTransaction();
+        try {
+            String createLoginTable = "CREATE TABLE " + TABLE_NAME + " (" +
+                    COLUMN_EMAIL + " TEXT PRIMARY KEY, " +
+                    COLUMN_PASSWD + " TEXT)";
+            db.execSQL(createLoginTable);
+            String createInfoTable = "CREATE TABLE " + TABLE2_NAME + " (" +
+                    COLUMN2_EMAIL + " TEXT PRIMARY KEY, " +
+                    COLUMN2_USERNAME + " TEXT, " +
+                    COLUMN2_STAGE + " INTEGER, " +
+                    COLUMN2_TIME + " INTEGER)";
+            db.execSQL(createInfoTable);
+            db.setTransactionSuccessful();
+        } catch (Exception e) {
+            Log.e("DatabaseHelper", "Error creating tables", e);
+        } finally {
+            db.endTransaction();
+        }
     }
 
     @Override
@@ -51,65 +58,80 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     //Create new record in database when signup
-    public Boolean inputData(String email, String passwd, String username) {
+    public boolean inputData(String email, String passwd, String username) {
         SQLiteDatabase DB = this.getWritableDatabase();
-        ContentValues contentValues = new ContentValues();
-        contentValues.put(COLUMN_EMAIL, email);
-        contentValues.put(COLUMN_PASSWD, passwd);
-        long result1 = DB.insert(TABLE_NAME, null, contentValues);
-        ContentValues contentValues2 = new ContentValues();
-        contentValues2.put(COLUMN2_EMAIL, email);
-        contentValues2.put(COLUMN2_USERNAME, username);
-        contentValues2.put(COLUMN2_STAGE, 1);
-        contentValues2.put(COLUMN2_TIME, 0);
-        long result2 = DB.insert(TABLE2_NAME, null, contentValues2);
+        DB.beginTransaction();
+        long result1 = -1, result2 = -1;
+        try {
+            ContentValues contentValues = new ContentValues();
+            contentValues.put(COLUMN_EMAIL, email);
+            contentValues.put(COLUMN_PASSWD, passwd);
+            result1 = DB.insert(TABLE_NAME, null, contentValues);
 
+            ContentValues contentValues2 = new ContentValues();
+            contentValues2.put(COLUMN2_EMAIL, email);
+            contentValues2.put(COLUMN2_USERNAME, username);
+            contentValues2.put(COLUMN2_STAGE, 1);
+            contentValues2.put(COLUMN2_TIME, 0);
+            result2 = DB.insert(TABLE2_NAME, null, contentValues2);
+
+            if (result1 != -1 && result2 != -1) {
+                DB.setTransactionSuccessful();
+            }
+        } catch (Exception e) {
+            Log.e("DatabaseHelper", "Error inserting data", e);
+        } finally {
+            DB.endTransaction();
+        }
         return result1 != -1 && result2 != -1;
     }
 
     //Update password when user forget
-    public Boolean updatePw(String email, String passwd) {
+    public boolean updatePw(String email, String passwd) {
         SQLiteDatabase DB = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
-        contentValues.put(COLUMN_EMAIL, email);
         contentValues.put(COLUMN_PASSWD, passwd);
-        long result = DB.update(TABLE_NAME, contentValues, COLUMN_EMAIL+"=?", new String[]{email});
-
-        return result != -1;
+        int result = DB.update(TABLE_NAME, contentValues, COLUMN_EMAIL + "=?", new String[]{email});
+        return result > 0;
     }
 
     //Check if email exist: T -> exist; F -> not exist
-    public Boolean checkRecord(String email) {
+    public boolean checkRecord(String email) {
         try (SQLiteDatabase DB = this.getReadableDatabase(); Cursor cursor = DB.rawQuery(
                 "SELECT * FROM " + TABLE_NAME + " WHERE " + COLUMN_EMAIL + " = ?", new String[]{email})) {
-            if (cursor != null && cursor.moveToFirst())
-                return cursor.getCount() > 0;
+            return cursor != null && cursor.moveToFirst();
+        } catch (Exception e) {
+            Log.e("DatabaseHelper", "Error checking record", e);
+            return false;
         }
-        return false;
     }
 
     //Check if the password is correct, call checkRecord() first before this
-    public Boolean validate(String email, String passwd) {
+    public boolean validate(String email, String passwd) {
         try (SQLiteDatabase DB = this.getReadableDatabase(); Cursor cursor = DB.rawQuery(
                 "SELECT * FROM " + TABLE_NAME + " WHERE " +
-                        COLUMN_EMAIL + " = ? and " + COLUMN_PASSWD + " = ?", new String[]{email, passwd})) {
-            if (cursor != null && cursor.moveToFirst())
-                return cursor.getCount() > 0;
+                        COLUMN_EMAIL + " = ? AND " + COLUMN_PASSWD + " = ?", new String[]{email, passwd})) {
+            return cursor != null && cursor.moveToFirst();
+        } catch (Exception e) {
+            Log.e("DatabaseHelper", "Error validating user", e);
+            return false;
         }
-        return false;
     }
 
     //Get user data for lobby, [0]Username [1]Stage [2]Time used
     public String getInfo(String email, int i) {
-        String[] getBack = new String[3];
-        try (SQLiteDatabase DB = this.getReadableDatabase(); Cursor cursor = DB.rawQuery(
-                "SELECT " + COLUMN2_USERNAME + ", " + COLUMN2_STAGE + ", " + COLUMN2_TIME + " FROM " +
-                        TABLE2_NAME + " WHERE " + COLUMN2_EMAIL + " = ?", new String[]{email})) {
+        String[] getBack = {"Unknown", "Unknown", "Unknown"};
+        try (SQLiteDatabase DB = this.getReadableDatabase();
+             Cursor cursor = DB.rawQuery("SELECT " + COLUMN2_USERNAME + ", " + COLUMN2_STAGE + ", " + COLUMN2_TIME +
+                     " FROM " + TABLE2_NAME + " WHERE " + COLUMN2_EMAIL + " = ?", new String[]{email})) {
             if (cursor != null && cursor.moveToFirst()) {
                 getBack[0] = cursor.getString(0);
                 getBack[1] = cursor.getString(1);
                 getBack[2] = cursor.getString(2);
             }
+        } catch (Exception e) {
+            Log.e("DatabaseHelper", "Error retrieving user info", e);
+            return "Error retrieving data";
         }
         return getBack[i];
     }
@@ -131,6 +153,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     resultList.add(row);
                 }
             }
+        } catch (Exception e) {
+            Log.e("DatabaseHelper", "Error fetching all user info", e);
         } finally {
             DB.close();
         }
@@ -139,26 +163,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     //Update Stage and Point after completing each level
-    public Boolean updateStatus(String email, String stage, String time) {
+    public boolean updateStatus(String email, String stage, String time) {
         SQLiteDatabase DB = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put(COLUMN2_STAGE, stage);
         contentValues.put(COLUMN2_TIME, time);
-        long result = DB.update(TABLE2_NAME, contentValues, COLUMN2_EMAIL+"=?", new String[]{email});
-        return result != -1;
+        int result = DB.update(TABLE2_NAME, contentValues, COLUMN2_EMAIL + "=?", new String[]{email});
+        return result > 0;
     }
 
-    private void Testcase() {
-        Boolean Temp;
-        Temp = inputData("Test1", "abcabcabc", "Test1");
-        Temp = inputData("Test3", "abcabcabc", "Test3");
-        Temp = inputData("Test5", "abcabcabc", "Test5");
-        Temp = inputData("Test2", "abcabcabc", "Test2");
-        Temp = inputData("Test4", "abcabcabc", "Test4");
-        Temp = updateStatus("Test1", "1","253");
-        Temp = updateStatus("Test5", "6","572");
-        Temp = updateStatus("Test3", "4","447");
-        Temp = updateStatus("Test2", "4","273");
-        Temp = updateStatus("Test4", "8","495");
-    }
 }

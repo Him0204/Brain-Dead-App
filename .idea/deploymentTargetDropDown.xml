@@ -21,14 +21,27 @@
       <entry key="Game2">
         <State />
       </entry>
-      <entry key="Game3">
-        <State />
-      </entry>
       <entry key="Game4">
         <State />
       </entry>
-      <entry key="LoginPage">
+      <entry key="LobbyPage">
         <State />
+      </entry>
+      <entry key="LoginPage">
+        <State>
+          <targetSelectedWithDropDown>
+            <Target>
+              <type value="QUICK_BOOT_TARGET" />
+              <deviceKey>
+                <Key>
+                  <type value="VIRTUAL_DEVICE_PATH" />
+                  <value value="C:\Users\willi\.android\avd\Pixel_3_XL_API_33.avd" />
+                </Key>
+              </deviceKey>
+            </Target>
+          </targetSelectedWithDropDown>
+          <timeTargetWasSelectedWithDropDown value="2024-04-16T17:13:17.880043300Z" />
+        </State>
       </entry>
       <entry key="ScoreboardPage">
         <State>

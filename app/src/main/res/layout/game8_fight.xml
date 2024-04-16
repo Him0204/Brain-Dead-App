@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".stage8">
+
+    <include
+        layout="@layout/activity_layout_to_include"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+
+    <TextView
+        android:id="@+id/title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="150dp"
+        android:layout_centerHorizontal="true"
+        android:text="8. Defeat the monster"
+        android:textColor="@color/black"
+        android:textSize="24sp"
+        android:textStyle="bold" />
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/title"
+        android:id="@+id/relative_layout">
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/person_with_gun">
+
+            <ImageButton
+                android:id="@+id/person"
+                android:layout_width="100dp"
+                android:layout_height="180dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="240dp"
+                android:background="?android:attr/activatedBackgroundIndicator"
+                android:scaleType="fitCenter"
+                android:src="@drawable/angry_person" />
+
+            <ImageButton
+                android:id="@+id/equipped_gun"
+                android:layout_width="80dp"
+                android:layout_height="50dp"
+                android:layout_marginStart="80dp"
+                android:layout_marginTop="257dp"
+                android:rotationY="30"
+                android:background="?android:attr/activatedBackgroundIndicator"
+                android:scaleType="fitCenter"
+                android:visibility="gone"
+                android:src="@drawable/gun" />
+        </RelativeLayout>
+
+
+        <ImageButton
+            android:id="@+id/house"
+            android:layout_width="170dp"
+            android:layout_height="170dp"
+            android:layout_marginTop="50dp"
+            android:layout_marginStart="120dp"
+            android:background="?android:attr/activatedBackgroundIndicator"
+            android:scaleType="fitCenter"
+            android:src="@drawable/house" />
+
+        <ImageButton
+            android:id="@+id/monster"
+            android:layout_width="140dp"
+            android:layout_height="140dp"
+            android:layout_marginTop="100dp"
+            android:layout_marginStart="270dp"
+            android:background="?android:attr/activatedBackgroundIndicator"
+            android:scaleType="fitCenter"
+            android:src="@drawable/monster" />
+
+        <ImageButton
+            android:id="@+id/table"
+            android:layout_width="200dp"
+            android:layout_height="100dp"
+            android:layout_marginTop="300dp"
+            android:layout_marginStart="180dp"
+            android:background="?android:attr/activatedBackgroundIndicator"
+            android:scaleType="fitCenter"
+            android:src="@drawable/table" />
+
+        <ImageButton
+            android:id="@+id/unequipped_gun"
+            android:layout_width="80dp"
+            android:layout_height="70dp"
+            android:layout_marginTop="280dp"
+            android:layout_marginStart="300dp"
+            android:rotation="270"
+            android:background="?android:attr/activatedBackgroundIndicator"
+            android:scaleType="fitCenter"
+            android:src="@drawable/gun" />
+
+        <ImageButton
+            android:id="@+id/sword"
+            android:layout_width="40dp"
+            android:layout_height="70dp"
+            android:layout_marginStart="260dp"
+            android:layout_marginTop="280dp"
+            android:background="?android:attr/activatedBackgroundIndicator"
+            android:scaleType="fitCenter"
+            android:src="@drawable/sword" />
+
+        <ImageButton
+            android:id="@+id/hammer"
+            android:layout_width="40dp"
+            android:layout_height="70dp"
+            android:layout_marginStart="200dp"
+            android:layout_marginTop="280dp"
+            android:background="?android:attr/activatedBackgroundIndicator"
+            android:scaleType="fitCenter"
+            android:src="@drawable/hammer" />
+
+        <ImageButton
+            android:id="@+id/sun"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginStart="20dp"
+            android:background="?android:attr/activatedBackgroundIndicator"
+            android:scaleType="fitCenter"
+            android:src="@drawable/sun" />
+
+        <ImageView
+            android:id="@+id/laser_beam"
+            android:layout_width="390dp"
+            android:layout_height="280dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="100dp"
+            android:background="?android:attr/activatedBackgroundIndicator"
+            android:rotation="64"
+            android:scaleType="fitCenter"
+            android:src="@drawable/laser_beam"
+            android:visibility="gone" />
+
+    </RelativeLayout>
+
+</RelativeLayout>

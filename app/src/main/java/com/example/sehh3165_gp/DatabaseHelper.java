@@ -5,6 +5,10 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
     private static final int DATABASE_VERSION = 1;
@@ -36,6 +40,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 COLUMN2_STAGE + " TEXT, " +
                 COLUMN2_TIME + " TEXT)";
         db.execSQL(query);
+        Log.wtf("hihihihi","hihihiihih");
         Testcase();
     }
 
@@ -76,9 +81,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     //Check if email exist: T -> exist; F -> not exist
     public Boolean checkRecord(String email) {
-        SQLiteDatabase DB = this.getReadableDatabase();
-        try (Cursor cursor = DB.rawQuery(
-                "SELECT * FROM "+TABLE_NAME+" WHERE "+COLUMN_EMAIL+" = ?", new String[]{email})){
+        try (SQLiteDatabase DB = this.getReadableDatabase(); Cursor cursor = DB.rawQuery(
+                "SELECT * FROM " + TABLE_NAME + " WHERE " + COLUMN_EMAIL + " = ?", new String[]{email})) {
             if (cursor != null && cursor.moveToFirst())
                 return cursor.getCount() > 0;
         }
@@ -87,10 +91,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     //Check if the password is correct, call checkRecord() first before this
     public Boolean validate(String email, String passwd) {
-        SQLiteDatabase DB = this.getReadableDatabase();
-        try (Cursor cursor = DB.rawQuery(
-                "SELECT * FROM "+TABLE_NAME+" WHERE "+
-                        COLUMN_EMAIL+" = ? and "+COLUMN_PASSWD+" = ?", new String[]{email, passwd})){
+        try (SQLiteDatabase DB = this.getReadableDatabase(); Cursor cursor = DB.rawQuery(
+                "SELECT * FROM " + TABLE_NAME + " WHERE " +
+                        COLUMN_EMAIL + " = ? and " + COLUMN_PASSWD + " = ?", new String[]{email, passwd})) {
             if (cursor != null && cursor.moveToFirst())
                 return cursor.getCount() > 0;
         }
@@ -100,9 +103,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     //Get user data for lobby, [0]Username [1]Stage [2]Time used
     public String getInfo(String email, int i) {
         String[] getBack = new String[3];
-        SQLiteDatabase DB = this.getReadableDatabase();
-        try (Cursor cursor = DB.rawQuery(
-                "SELECT "+COLUMN2_USERNAME+", "+COLUMN2_STAGE+", "+COLUMN2_TIME+" FROM " +
+        try (SQLiteDatabase DB = this.getReadableDatabase(); Cursor cursor = DB.rawQuery(
+                "SELECT " + COLUMN2_USERNAME + ", " + COLUMN2_STAGE + ", " + COLUMN2_TIME + " FROM " +
                         TABLE2_NAME + " WHERE " + COLUMN2_EMAIL + " = ?", new String[]{email})) {
             if (cursor != null && cursor.moveToFirst()) {
                 getBack[0] = cursor.getString(0);
@@ -114,23 +116,27 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     //Get all users' data for scoreboard, [1]Username [2]Stage [3]Time used
-    public void getAllInfo(String[][] getBack) {
+    public String[][] getAllInfo() {
         SQLiteDatabase DB = this.getReadableDatabase();
+        List<String[]> resultList = new ArrayList<>();
         try (Cursor cursor = DB.rawQuery(
                 "SELECT "+COLUMN2_USERNAME+", "+COLUMN2_STAGE+", "+COLUMN2_TIME+" FROM "+TABLE2_NAME+
                         " ORDER BY "+COLUMN2_STAGE+" DESC, "+COLUMN2_TIME+" ASC", null)) {
-            int i = 0;
-            while (cursor != null && cursor.moveToNext()) {
-                if (getBack[i] == null) {
-                    getBack[i] = new String[3];
-                }
-                getBack[i][0] = cursor.getString(0);
-                getBack[i][1] = cursor.getString(1);
-                getBack[i][2] = cursor.getString(2);
 
-                i++;
+            if (cursor != null) {
+                while (cursor.moveToNext()) {
+                    String[] row = new String[3];
+                    row[0] = cursor.getString(0); // Username
+                    row[1] = cursor.getString(1); // Stage
+                    row[2] = cursor.getString(2); // Time
+                    resultList.add(row);
+                }
             }
+        } finally {
+            DB.close();
         }
+        String[][] getBack = new String[resultList.size()][];
+        return resultList.toArray(getBack);
     }
 
     //Update Stage and Point after completing each level
@@ -146,6 +152,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private void Testcase() {
         Boolean Temp;
         Temp = inputData("Test1", "abcabcabc", "Test1");
+        /*
         Temp = inputData("Test3", "abcabcabc", "Test3");
         Temp = inputData("Test5", "abcabcabc", "Test5");
         Temp = inputData("Test2", "abcabcabc", "Test2");
@@ -155,5 +162,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         Temp = updateStatus("Test3", "4","447");
         Temp = updateStatus("Test2", "4","273");
         Temp = updateStatus("Test4", "8","495");
+        */
     }
 }

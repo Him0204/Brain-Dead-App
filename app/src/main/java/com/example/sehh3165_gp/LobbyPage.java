@@ -27,7 +27,7 @@ public class LobbyPage extends AppCompatActivity {
 
         Button scoreboard = (Button) findViewById(R.id.button_scoreboard);
         scoreboard.setOnClickListener(v -> {
-            Intent i = new Intent(LobbyPage.this, ScoreboardPage.class);
+            Intent i = new Intent(LobbyPage.this, LobbyPage.class);
             i.putExtra("email", email);
             i.putExtra("username", player_username);
             startActivity(i);

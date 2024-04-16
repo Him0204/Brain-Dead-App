@@ -80,7 +80,7 @@ public class Game1 extends AppCompatActivity implements View.OnClickListener, Vi
     @Override
     public void onClick(View v) {
         if (v.getId() == R.id.imageButton_home) {
-            Intent i = new Intent(Game4.this, LobbyPage.class);
+            Intent i = new Intent(Game1.this, LobbyPage.class);
             i.putExtra("Email", email);
             startActivity(i);
         }
@@ -89,10 +89,10 @@ public class Game1 extends AppCompatActivity implements View.OnClickListener, Vi
             stopService(musicIntent);
         }
         else if (v.getId() == R.id.imageButton_hint) {
-            Toast.makeText(Game4.this, "Think out of the box", Toast.LENGTH_SHORT).show();
+            Toast.makeText(Game1.this, "Think out of the box", Toast.LENGTH_SHORT).show();
         }
         else if (v.getId() == R.id.imageButton_reset) {
-            Intent i = new Intent(this, Game4.class);
+            Intent i = new Intent(this, Game1.class);
             i.putExtra("Email", email);
             startActivity(i);
             finish();

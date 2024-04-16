@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.Network;
 import android.net.NetworkCapabilities;
+import android.net.NetworkRequest;
 import android.os.Bundle;
 import android.view.MotionEvent;
 import android.view.View;
@@ -16,19 +17,22 @@ public class Game4 extends AppCompatActivity implements View.OnClickListener, Vi
 
     float xAxis, yAxis, buttonX, buttonY;
     int lastAction;
+    boolean initialNetworkState;
 
     ImageButton home, sound, game_hint, game_reset;
     ImageButton networkPC, standalonePC, router;
 
     String email;
+    private ConnectivityManager connectivityManager;
+    private ConnectivityManager.NetworkCallback networkCallback;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.game4_computer);
 
-        Bundle extras = getIntent().getExtras();
-        email = extras != null ? extras.getString("Email") : null;
+        //Bundle extras = getIntent().getExtras();
+        //email = extras != null ? extras.getString("Email") : null;
 
         home = findViewById(R.id.imageButton_home);
         sound = findViewById(R.id.imageButton_sound);
@@ -42,15 +46,20 @@ public class Game4 extends AppCompatActivity implements View.OnClickListener, Vi
         networkPC = findViewById(R.id.imageButton_computer);
         standalonePC = findViewById(R.id.imageButton_no_wifi_computer);
 
-        if (isInternetAvailable()) {
-            networkPC.setVisibility(View.VISIBLE);
-        }
-        else {
-            standalonePC.setVisibility(View.VISIBLE);
-        }
+        connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        initialNetworkState = isInternetAvailable();
+        updateNetworkState(initialNetworkState);
+
         router = findViewById(R.id.imageButton_router);
         router.setOnTouchListener(this);
 
+        setupNetworkCallback();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        connectivityManager.unregisterNetworkCallback(networkCallback);
     }
 
     @Override
@@ -106,6 +115,41 @@ public class Game4 extends AppCompatActivity implements View.OnClickListener, Vi
         }
     }
 
+    private void setupNetworkCallback() {
+        networkCallback = new ConnectivityManager.NetworkCallback() {
+            @Override
+            public void onAvailable(Network network) {
+                runOnUiThread(() -> updateNetworkState(true));
+            }
+
+            @Override
+            public void onLost(Network network) {
+                runOnUiThread(() -> updateNetworkState(false));
+            }
+        };
+
+        NetworkRequest request = new NetworkRequest.Builder()
+                .addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+                .build();
+        connectivityManager.registerNetworkCallback(request, networkCallback);
+    }
+
+    private void updateNetworkState(boolean isOnline) {
+        if (isOnline) {
+            networkPC.setVisibility(View.VISIBLE);
+            standalonePC.setVisibility(View.INVISIBLE);
+        } else {
+            networkPC.setVisibility(View.INVISIBLE);
+            standalonePC.setVisibility(View.VISIBLE);
+        }
+
+        // Check if network state changed to pass the game
+        if (isOnline != initialNetworkState) {
+            win();
+            initialNetworkState = isOnline; // Update initial state to prevent multiple triggers
+        }
+    }
+
     private boolean Overlapped(View firstView, View secondView) {
         int[] firstPosition = new int[2];
         int[] secondPosition = new int[2];
@@ -135,9 +179,7 @@ public class Game4 extends AppCompatActivity implements View.OnClickListener, Vi
     }
 
     private void win() {
-        Toast.makeText(this,  "v", Toast.LENGTH_SHORT).show();
-        //wakeBoy.setVisibility(View.INVISIBLE);
-        //sleepBoy.setVisibility(View.VISIBLE);
+        Toast.makeText(this, "Network change detected: Game passed", Toast.LENGTH_LONG).show();
     }
 
 }

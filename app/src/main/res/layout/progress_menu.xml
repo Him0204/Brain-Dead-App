@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <com.airbnb.lottie.LottieAnimationView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/animation_view"
+        app:lottie_rawRes="@raw/tick"
+        android:layout_centerVertical="true"
+        app:lottie_autoPlay="true"
+        app:lottie_scale="0.05"
+        app:lottie_speed="1.25"
+        app:lottie_loop="false"/>
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true"
+        android:visibility="gone"
+        android:id="@+id/progress_menu">
+
+        <TextView
+            android:id="@+id/stage5_complete"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/white"
+            android:layout_centerHorizontal="true"
+            android:textSize="30dp"
+            android:shadowRadius="4"
+            android:shadowColor="@color/white"
+            android:shadowDy="5"
+            android:shadowDx="5"
+            android:text="Stage 5 COMPLETE!"/>
+
+        <Button
+            android:id="@+id/button_continue"
+            android:layout_width="250dp"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/stage5_complete"
+            android:layout_marginTop="70dp"
+            android:layout_centerHorizontal="true"
+            android:background="@drawable/button_rectangle"
+            android:text="Continue" />
+
+        <Button
+            android:id="@+id/button_back_to_lobby"
+            android:layout_width="250dp"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/button_continue"
+            android:layout_marginTop="30dp"
+            android:layout_centerHorizontal="true"
+            android:background="@drawable/button_rectangle"
+            android:text="Home" />
+
+    </RelativeLayout>
+
+</RelativeLayout>

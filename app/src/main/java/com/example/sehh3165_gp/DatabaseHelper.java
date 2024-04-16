@@ -40,7 +40,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 COLUMN2_STAGE + " TEXT, " +
                 COLUMN2_TIME + " TEXT)";
         db.execSQL(query);
-        Log.wtf("hihihihi","hihihiihih");
         Testcase();
     }
 
@@ -152,7 +151,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private void Testcase() {
         Boolean Temp;
         Temp = inputData("Test1", "abcabcabc", "Test1");
-        /*
         Temp = inputData("Test3", "abcabcabc", "Test3");
         Temp = inputData("Test5", "abcabcabc", "Test5");
         Temp = inputData("Test2", "abcabcabc", "Test2");
@@ -162,6 +160,5 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         Temp = updateStatus("Test3", "4","447");
         Temp = updateStatus("Test2", "4","273");
         Temp = updateStatus("Test4", "8","495");
-        */
     }
 }

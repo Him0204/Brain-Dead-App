@@ -31,12 +31,6 @@ public class LoginPage extends AppCompatActivity implements View.OnClickListener
         forgetPw.setOnClickListener(this);
         signUp.setOnClickListener(this);
 
-        DatabaseHelper DB = new DatabaseHelper(this);
-        String arr[][] = DB.getAllInfo();
-        for (String[] strings : arr) {
-            Log.wtf("hi2342", Arrays.toString(strings));
-        }
-
     }
 
     private boolean validate(String email, String passwd) {

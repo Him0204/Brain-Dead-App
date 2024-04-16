@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".Game7">
+
+    <include
+        layout="@layout/game_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <ImageView
+        android:id="@+id/image_old_ppl"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_marginTop="340dp"
+        android:layout_marginLeft="200dp"
+        android:src="@drawable/old_ppl" />
+
+    <ImageView
+        android:id="@+id/image_msg_bubble"
+        android:layout_width="200dp"
+        android:layout_height="200dp"
+        android:layout_marginTop="150dp"
+        android:layout_marginLeft="100dp"
+        android:src="@drawable/message_bubble" />
+
+    <ImageButton
+        android:id="@+id/image_mic_red"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_marginTop="500dp"
+        android:layout_marginStart="150dp"
+        android:background="?android:attr/activatedBackgroundIndicator"
+        android:scaleType="fitCenter"
+        android:src="@drawable/mic_red" />
+
+    <ImageButton
+        android:id="@+id/image_mic_white"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_marginLeft="150dp"
+        android:layout_marginTop="500dp"
+        android:background="?android:attr/activatedBackgroundIndicator"
+        android:scaleType="fitCenter"
+        android:src="@drawable/mic_white" />
+
+    <TextView
+        android:id="@+id/speak"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textStyle="bold"
+        android:layout_marginTop="490dp"
+        android:layout_marginLeft="155dp"
+        android:text="Hold to speak !" />
+
+    <TextView
+        android:id="@+id/old_ppl_msg"
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:textStyle="bold"
+        android:layout_marginTop="220dp"
+        android:layout_marginLeft="150dp"
+        android:text="Say something! I can't hear you!" />
+
+    <TextView
+        android:id="@+id/old_ppl_msg_hear"
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:textStyle="bold"
+        android:layout_marginTop="220dp"
+        android:layout_marginLeft="150dp"
+        android:text="I can hear you now!" />
+
+
+</RelativeLayout>

@@ -1,13 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".stage8">
 
     <include
-        layout="@layout/activity_layout_to_include"
+        layout="@layout/game_layout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 
@@ -67,7 +66,7 @@
             android:layout_marginStart="120dp"
             android:background="?android:attr/activatedBackgroundIndicator"
             android:scaleType="fitCenter"
-            android:src="@drawable/house" />
+            android:src="@drawable/g5_house" />
 
         <ImageButton
             android:id="@+id/monster"

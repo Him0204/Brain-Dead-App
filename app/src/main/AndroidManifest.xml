@@ -41,6 +41,14 @@
             android:exported="true" />
         <activity android:name=".Game4"
             android:exported="true" />
+        <activity android:name=".Game5"
+            android:exported="true" />
+        <activity android:name=".Game6"
+            android:exported="true" />
+        <activity android:name=".Game7"
+            android:exported="true" />
+        <activity android:name=".Game8"
+            android:exported="true" />
         <service android:name=".BackgroundMusic" />
     </application>
 

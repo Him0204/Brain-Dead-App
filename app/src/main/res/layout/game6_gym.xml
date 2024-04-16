@@ -1,6 +1,130 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:id="@+id/relative_layout"
+    tools:context=".stage6">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <include
+        layout="@layout/game_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <TextView
+        android:id="@+id/title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="150dp"
+        android:layout_centerHorizontal="true"
+        android:text="6. Make the fat guy slim"
+        android:textColor="@color/black"
+        android:textSize="24sp"
+        android:textStyle="bold" />
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="430dp"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/title"
+        android:layout_marginTop="20dp"
+        android:id="@id/gym_layout"
+        android:background="@drawable/g6_gym_background">
+
+        <ImageView
+            android:id="@+id/janitor"
+            android:layout_width="175dp"
+            android:layout_height="150dp"
+            android:rotationY="180"
+            android:layout_marginTop="170dp"
+            android:src="@drawable/g6_janitor" />
+
+        <ImageView
+            android:id="@+id/vacuum"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_marginLeft="45dp"
+            android:layout_marginTop="220dp"
+            android:src="@drawable/g6_vacuum" />
+
+        <ImageView
+            android:id="@+id/slim_guy"
+            android:layout_width="150dp"
+            android:layout_height="200dp"
+            android:layout_marginTop="260dp"
+            android:layout_marginLeft="180dp"
+            android:layout_alignLeft="@id/fat_guy"
+            android:layout_alignTop="@id/fat_guy"
+            android:visibility="gone"
+            android:src="@drawable/g6_slim_guy" />
+
+        <ImageView
+            android:id="@+id/fat_guy"
+            android:layout_width="150dp"
+            android:layout_height="200dp"
+            android:layout_marginTop="260dp"
+            android:layout_marginLeft="180dp"
+            android:src="@drawable/g6_fat_guy" />
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/janitor_dead"
+            android:visibility="gone">
+
+            <ImageView
+                android:id="@+id/janitor_rotated"
+                android:layout_width="175dp"
+                android:layout_height="150dp"
+                android:rotationY="180"
+                android:layout_marginTop="250dp"
+                android:src="@drawable/g6_janitor_dead" />
+
+            <ImageView
+                android:id="@+id/blood"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:rotationY="180"
+                android:layout_marginTop="330dp"
+                android:layout_marginStart="110dp"
+                android:src="@drawable/g6_blood" />
+
+            <ImageView
+                android:id="@+id/blood1"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:rotationY="180"
+                android:layout_marginTop="300dp"
+                android:layout_marginStart="150dp"
+                android:src="@drawable/g6_blood" />
+        </RelativeLayout>
+
+        <ImageView
+            android:id="@+id/protein"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_marginLeft="340dp"
+            android:layout_marginTop="360dp"
+            android:src="@drawable/g6_protein" />
+
+        <ImageView
+            android:id="@+id/image_dumbbell"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:layout_marginLeft="30dp"
+            android:rotation="345"
+            android:layout_marginTop="340dp"
+            android:src="@drawable/g6_dumbbell" />
+
+        <ImageView
+            android:id="@+id/vacuum_for_guy"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_marginLeft="45dp"
+            android:layout_marginTop="220dp"
+            android:visibility="gone"
+            android:src="@drawable/g6_vacuum" />
+
+    </RelativeLayout>
+
+</RelativeLayout>

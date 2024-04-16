@@ -43,7 +43,7 @@
             android:layout_below="@id/stage8_complete"
             android:layout_marginTop="70dp"
             android:layout_centerHorizontal="true"
-            android:background="@drawable/button_rectangle"
+            android:background="@drawable/lobby_button_rectangle"
             android:text="Continue" />
 
         <Button
@@ -53,7 +53,7 @@
             android:layout_below="@id/button_continue"
             android:layout_marginTop="30dp"
             android:layout_centerHorizontal="true"
-            android:background="@drawable/button_rectangle"
+            android:background="@drawable/lobby_button_rectangle"
             android:visibility="invisible"
             android:text="HOME" />
 

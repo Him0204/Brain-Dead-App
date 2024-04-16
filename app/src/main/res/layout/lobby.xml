@@ -34,7 +34,7 @@
             android:scaleType="centerCrop"
             android:cropToPadding="true"
             android:adjustViewBounds="true"
-            android:src="@drawable/rectangle"/>
+            android:src="@drawable/lobby_rectangle"/>
 
         <Button
             android:id="@+id/button_scoreboard"
@@ -42,7 +42,7 @@
             android:layout_height="50dp"
             android:layout_centerHorizontal="true"
             android:layout_centerVertical="true"
-            android:background="@drawable/button_rectangle"
+            android:background="@drawable/lobby_button_rectangle"
             android:text="@string/scoreboard" />
     </RelativeLayout>
 
@@ -57,7 +57,7 @@
             android:id="@+id/button_lv1"
             android:layout_width="82dp"
             android:layout_height="65dp"
-            android:background="@drawable/button_rectangle_grey"
+            android:background="@drawable/lobby_button_rectangle_grey"
             android:enabled="false"
             android:text="Level 1" />
 
@@ -68,7 +68,7 @@
             android:layout_marginLeft="50dp"
             android:layout_toRightOf="@id/button_lv1"
             android:enabled="false"
-            android:background="@drawable/button_rectangle_grey"
+            android:background="@drawable/lobby_button_rectangle_grey"
             android:text="Level 2" />
 
         <Button
@@ -78,7 +78,7 @@
             android:layout_marginLeft="50dp"
             android:layout_toRightOf="@id/button_lv2"
             android:enabled="false"
-            android:background="@drawable/button_rectangle_grey"
+            android:background="@drawable/lobby_button_rectangle_grey"
             android:text="Level 3" />
 
         <Button
@@ -87,7 +87,7 @@
             android:layout_height="65dp"
             android:layout_marginTop="150dp"
             android:enabled="false"
-            android:background="@drawable/button_rectangle_grey"
+            android:background="@drawable/lobby_button_rectangle_grey"
             android:text="Level 4" />
 
         <Button
@@ -98,7 +98,7 @@
             android:layout_toRightOf="@id/button_lv4"
             android:layout_marginTop="150dp"
             android:enabled="false"
-            android:background="@drawable/button_rectangle_grey"
+            android:background="@drawable/lobby_button_rectangle_grey"
             android:text="Level 5" />
 
         <Button
@@ -109,7 +109,7 @@
             android:layout_toRightOf="@id/button_lv5"
             android:layout_marginTop="150dp"
             android:enabled="false"
-            android:background="@drawable/button_rectangle_grey"
+            android:background="@drawable/lobby_button_rectangle_grey"
             android:text="Level 6" />
 
         <Button
@@ -118,7 +118,7 @@
             android:layout_height="65dp"
             android:layout_marginTop="300dp"
             android:enabled="false"
-            android:background="@drawable/button_rectangle_grey"
+            android:background="@drawable/lobby_button_rectangle_grey"
             android:text="Level 7" />
 
         <Button
@@ -129,7 +129,7 @@
             android:layout_toRightOf="@id/button_lv7"
             android:layout_marginTop="300dp"
             android:enabled="false"
-            android:background="@drawable/button_rectangle_grey"
+            android:background="@drawable/lobby_button_rectangle_grey"
             android:text="Level 8" />
     </RelativeLayout>
 
@@ -140,7 +140,7 @@
         android:layout_marginTop="100dp"
         android:layout_centerHorizontal="true"
         android:layout_below="@id/levels"
-        android:background="@drawable/button_rectangle"
+        android:background="@drawable/lobby_button_rectangle"
         android:text="CONTINUE" />
 
 

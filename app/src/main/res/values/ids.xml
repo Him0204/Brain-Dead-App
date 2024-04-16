@@ -25,4 +25,5 @@
     <item name="imageButton_computer" type="id" />
     <item name="imageButton_router" type="id" />
     <item name="imageButton_no_wifi_computer" type="id" />
+    <item name="gym_layout" type="id" />
 </resources>

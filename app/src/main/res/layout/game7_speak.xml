@@ -16,7 +16,7 @@
         android:layout_height="100dp"
         android:layout_marginTop="340dp"
         android:layout_marginLeft="200dp"
-        android:src="@drawable/old_ppl" />
+        android:src="@drawable/g7_old_ppl" />
 
     <ImageView
         android:id="@+id/image_msg_bubble"
@@ -24,7 +24,7 @@
         android:layout_height="200dp"
         android:layout_marginTop="150dp"
         android:layout_marginLeft="100dp"
-        android:src="@drawable/message_bubble" />
+        android:src="@drawable/g7_message_bubble" />
 
     <ImageButton
         android:id="@+id/image_mic_red"
@@ -34,7 +34,7 @@
         android:layout_marginStart="150dp"
         android:background="?android:attr/activatedBackgroundIndicator"
         android:scaleType="fitCenter"
-        android:src="@drawable/mic_red" />
+        android:src="@drawable/g7_mic_red" />
 
     <ImageButton
         android:id="@+id/image_mic_white"
@@ -44,7 +44,7 @@
         android:layout_marginTop="500dp"
         android:background="?android:attr/activatedBackgroundIndicator"
         android:scaleType="fitCenter"
-        android:src="@drawable/mic_white" />
+        android:src="@drawable/g7_mic_white" />
 
     <TextView
         android:id="@+id/speak"

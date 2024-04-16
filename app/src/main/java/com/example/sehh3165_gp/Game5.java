@@ -9,7 +9,6 @@ import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.Handler;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -20,29 +19,23 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
-
 import com.airbnb.lottie.LottieAnimationView;
-
 import java.util.ArrayList;
 import java.util.List;
 
 public class Game5 extends Activity implements View.OnTouchListener {
-    private int deltaX;
-    private int deltaY;
+
+    private int deltaX, deltaY;
     String email;
     ViewGroup _root;
-    ImageButton glue;
-    ImageButton roof;
-    ImageButton garage;
-    ImageButton body;
-    ImageView house_result;
-    ImageView glue_result;
-    List<ImageButton> buttonArray = new ArrayList<ImageButton>();
+    ImageButton glue, roof, garage, body;
+    ImageView house_result, glue_result;
+    List<ImageButton> buttonArray = new ArrayList<>();
     View progress_menu;
     Handler handler;
     LottieAnimationView animationView;
-    Button button_continue;
-    Button button_back_to_lobby;
+    Button button_continue, button_back_to_lobby;
+
     int time_taken;
 
     @Override
@@ -51,21 +44,19 @@ public class Game5 extends Activity implements View.OnTouchListener {
         setContentView(R.layout.game5_house);
         time_taken = 0; //delete this when synced!
         Bundle extras = getIntent().getExtras();
-        email = extras.getString("email");
+        email = extras != null ? extras.getString("email") : null;
 
-        DatabaseHelper dbHelper = new DatabaseHelper(getApplicationContext());
-        _root = (ViewGroup)findViewById(R.id.relative_layout);
+        _root = findViewById(R.id.relative_layout);
 
-        glue = (ImageButton) findViewById(R.id.imageButton_glue);
-        roof = (ImageButton) findViewById(R.id.imageButton_roof);
-        garage = (ImageButton) findViewById(R.id.imageButton_garage);
-        body = (ImageButton) findViewById(R.id.imageButton_body);
+        glue = findViewById(R.id.imageButton_glue);
+        roof = findViewById(R.id.imageButton_roof);
+        garage = findViewById(R.id.imageButton_garage);
+        body = findViewById(R.id.imageButton_body);
 
         buttonArray.add(glue);
         buttonArray.add(roof);
         buttonArray.add(garage);
         buttonArray.add(body);
-
 
         glue.setOnTouchListener(this);
         roof.setOnTouchListener(this);
@@ -92,8 +83,8 @@ public class Game5 extends Activity implements View.OnTouchListener {
 
             case MotionEvent.ACTION_UP:
                 if (checkOverlap((ImageButton) v)) {
-                    house_result = (ImageView) findViewById(R.id.imageView_house_result);
-                    glue_result = (ImageView) findViewById(R.id.imageButton_glue_result);
+                    house_result = findViewById(R.id.imageView_house_result);
+                    glue_result = findViewById(R.id.imageButton_glue_result);
                     house_result.setVisibility(View.VISIBLE);
                     glue_result.setVisibility(View.VISIBLE);
                     glue.setVisibility(View.GONE);
@@ -131,45 +122,34 @@ public class Game5 extends Activity implements View.OnTouchListener {
                             animationView.animate()
                                     .alpha(0f)
 
-                                    .withEndAction(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            // Hide the animation view after fading out
-                                            animationView.setVisibility(View.GONE);
+                                    .withEndAction(() -> {
+                                        // Hide the animation view after fading out
+                                        animationView.setVisibility(View.GONE);
 
-                                            handler = new Handler();
-                                            handler.postDelayed(new Runnable() {
-                                                @Override
-                                                public void run() {
-                                                    progress_menu = newLayout.findViewById(R.id.progress_menu);
-                                                    progress_menu.setVisibility(View.VISIBLE);
-                                                    dbHelper.updateStatus(email, "5",time_taken);
-                                                    button_continue.setOnClickListener(new View.OnClickListener() {
-                                                        @Override
-                                                        public void onClick(View v) {
-                                                            Intent i = new Intent(Game5.this, Game6.class);
-                                                            i.putExtra("email", email);
-                                                            startActivity(i);
-                                                        }
-                                                    });
-                                                    button_back_to_lobby.setOnClickListener(new View.OnClickListener() {
-                                                        @Override
-                                                        public void onClick(View v) {
-                                                            Intent i = new Intent(Game5.this, LobbyPage.class);
-                                                            i.putExtra("email", email);
-                                                            startActivity(i);
-                                                        }
-                                                    });
-                                                    ObjectAnimator fadeInAnimator = ObjectAnimator.ofFloat(progress_menu, "alpha", 0f, 1f);
+                                        handler = new Handler();
+                                        handler.postDelayed(() -> {
+                                            progress_menu = newLayout.findViewById(R.id.progress_menu);
+                                            progress_menu.setVisibility(View.VISIBLE);
+                                            DatabaseHelper dbHelper = new DatabaseHelper(getApplicationContext());
+                                            dbHelper.updateStatus(email, "5", String.valueOf(time_taken));
+                                            button_continue.setOnClickListener(v12 -> {
+                                                Intent i = new Intent(Game5.this, Game6.class);
+                                                i.putExtra("email", email);
+                                                startActivity(i);
+                                            });
+                                            button_back_to_lobby.setOnClickListener(v1 -> {
+                                                Intent i = new Intent(Game5.this, LobbyPage.class);
+                                                i.putExtra("email", email);
+                                                startActivity(i);
+                                            });
+                                            ObjectAnimator fadeInAnimator = ObjectAnimator.ofFloat(progress_menu, "alpha", 0f, 1f);
 
-                                                    // Set the duration for the animation
-                                                    fadeInAnimator.setDuration(1000); // 1 second
+                                            // Set the duration for the animation
+                                            fadeInAnimator.setDuration(1000); // 1 second
 
-                                                    // Start the animation
-                                                    fadeInAnimator.start();
-                                                }
-                                            }, 300);
-                                        }
+                                            // Start the animation
+                                            fadeInAnimator.start();
+                                        }, 300);
                                     })
                                     .start();
                         }

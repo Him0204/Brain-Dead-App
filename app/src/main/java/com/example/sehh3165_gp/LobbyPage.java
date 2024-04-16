@@ -58,7 +58,7 @@ public class LobbyPage extends AppCompatActivity {
 
         for (int i = 0; i < stage; i++){
             Button button = buttonArray.get(i);
-            button.setBackgroundResource(R.drawable.button_rectangle2);
+            button.setBackgroundResource(R.drawable.lobby_button_rectangle2);
             button.setEnabled(true);
         }
 

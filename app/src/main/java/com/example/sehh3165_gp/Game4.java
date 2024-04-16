@@ -31,8 +31,8 @@ public class Game4 extends AppCompatActivity implements View.OnClickListener, Vi
         super.onCreate(savedInstanceState);
         setContentView(R.layout.game4_computer);
 
-        //Bundle extras = getIntent().getExtras();
-        //email = extras != null ? extras.getString("Email") : null;
+        Bundle extras = getIntent().getExtras();
+        email = extras != null ? extras.getString("Email") : null;
 
         home = findViewById(R.id.imageButton_home);
         sound = findViewById(R.id.imageButton_sound);

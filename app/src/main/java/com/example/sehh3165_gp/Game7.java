@@ -1,34 +1,49 @@
 package com.example.sehh3165_gp;
 
+import android.Manifest;
+import android.annotation.SuppressLint;
+import android.content.pm.PackageManager;
+import android.graphics.drawable.Drawable;
+import android.media.AudioFormat;
+import android.media.AudioRecord;
 import android.media.MediaRecorder;
 import android.os.Bundle;
 import android.view.MotionEvent;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
-import java.io.IOException;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 public class Game7 extends AppCompatActivity {
 
-    private MediaRecorder mediaRecorder;
-    private ImageButton speakButton;
-    private TextView statusText;
+    private static final int SAMPLE_RATE = 44100; // Can be adjusted
+    private AudioRecord audioRecorder;
+    private boolean isRecording = false;
+    private ImageButton whiteMic;
+    private TextView canHear, cannotHear;
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.game7_speak);
 
-        speakButton = findViewById(R.id.image_mic_white);
-        statusText = findViewById(R.id.old_ppl_msg);
+        whiteMic = findViewById(R.id.image_mic_white);
+        canHear = findViewById(R.id.old_ppl_msg_hear);
+        cannotHear = findViewById(R.id.old_ppl_msg);
 
-        speakButton.setOnTouchListener((v, event) -> {
+        Drawable whiteMicDrawable = ContextCompat.getDrawable(getApplicationContext(), R.drawable.g7_mic_white);
+        Drawable redMicDrawable = ContextCompat.getDrawable(getApplicationContext(), R.drawable.g7_mic_red);
+
+        whiteMic.setOnTouchListener((v, event) -> {
             switch (event.getAction()) {
                 case MotionEvent.ACTION_DOWN:
+                    whiteMic.setImageDrawable(redMicDrawable);
                     startRecording();
-                    statusText.setText("Listening...");
                     return true;
                 case MotionEvent.ACTION_UP:
+                    whiteMic.setImageDrawable(whiteMicDrawable);
                     stopRecording();
                     return true;
             }
@@ -37,52 +52,55 @@ public class Game7 extends AppCompatActivity {
     }
 
     private void startRecording() {
-        if (mediaRecorder == null) {
-            mediaRecorder = new MediaRecorder();
-            mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-            mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
-            mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
-            mediaRecorder.setOutputFile("/dev/null");
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED) {
+            if (audioRecorder == null || !isRecording) {
+                int minBufferSize = AudioRecord.getMinBufferSize(SAMPLE_RATE, AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT);
+                audioRecorder = new AudioRecord(MediaRecorder.AudioSource.MIC, SAMPLE_RATE, AudioFormat.CHANNEL_IN_MONO,
+                        AudioFormat.ENCODING_PCM_16BIT, minBufferSize);
 
-            try {
-                mediaRecorder.prepare();
-                mediaRecorder.start();
-                mediaRecorder.getMaxAmplitude(); // Resetting maximum amplitude
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
+                if (audioRecorder.getState() == AudioRecord.STATE_INITIALIZED) {
+                    audioRecorder.startRecording();
+                    isRecording = true;
+                    Thread recordingThread = new Thread(this::analyzeAudio);
+                    recordingThread.start();
+                }  // Handle initialization error
 
-        final Thread listeningThread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                while (mediaRecorder != null) {
-                    int amplitude = mediaRecorder.getMaxAmplitude();
-                    if (amplitude > 10000) { // Check dB level, this threshold might need adjustment
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                statusText.setText("I can hear you now!");
-                            }
-                        });
-                    }
-                    try {
-                        Thread.sleep(100);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
             }
-        });
-        listeningThread.start();
+        }  // Permission is not granted, handle accordingly
+
     }
 
     private void stopRecording() {
-        if (mediaRecorder != null) {
-            mediaRecorder.stop();
-            mediaRecorder.release();
-            mediaRecorder = null;
-            statusText.setText("Say something! I can't hear you!");
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED) {
+            if (audioRecorder != null && isRecording) {
+                isRecording = false;
+                audioRecorder.stop();
+                audioRecorder.release();
+                audioRecorder = null;
+                runOnUiThread(() -> {
+                    canHear.setVisibility(TextView.INVISIBLE);
+                    cannotHear.setVisibility(TextView.VISIBLE);
+                });
+            }
+        }  // Permission is not granted, handle accordingly
+
+    }
+
+
+    private void analyzeAudio() {
+        short[] buffer = new short[AudioRecord.getMinBufferSize(SAMPLE_RATE, AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT)];
+        while (isRecording) {
+            int readSize = audioRecorder.read(buffer, 0, buffer.length);
+            int maxAmplitude = 0;
+            for (int i = 0; i < readSize; i++) {
+                maxAmplitude = Math.max(maxAmplitude, Math.abs(buffer[i]));
+            }
+            if (maxAmplitude > 10000) {
+                runOnUiThread(() -> {
+                    cannotHear.setVisibility(TextView.INVISIBLE);
+                    canHear.setVisibility(TextView.VISIBLE);
+                });
+            }
         }
     }
 }

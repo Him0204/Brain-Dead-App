@@ -27,16 +27,6 @@
         android:src="@drawable/g7_message_bubble" />
 
     <ImageButton
-        android:id="@+id/image_mic_red"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:layout_marginTop="500dp"
-        android:layout_marginStart="150dp"
-        android:background="?android:attr/activatedBackgroundIndicator"
-        android:scaleType="fitCenter"
-        android:src="@drawable/g7_mic_red" />
-
-    <ImageButton
         android:id="@+id/image_mic_white"
         android:layout_width="100dp"
         android:layout_height="100dp"
@@ -71,7 +61,8 @@
         android:textStyle="bold"
         android:layout_marginTop="220dp"
         android:layout_marginLeft="150dp"
-        android:text="I can hear you now!" />
+        android:text="I can hear you now!"
+        android:visibility="invisible" />
 
 
 </RelativeLayout>

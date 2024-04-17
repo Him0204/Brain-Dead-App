@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -23,6 +24,7 @@ import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
+import androidx.core.content.ContextCompat;
 import androidx.preference.PreferenceManager;
 
 import com.airbnb.lottie.LottieAnimationView;
@@ -33,7 +35,6 @@ import java.util.List;
 public class Game5 extends Activity implements View.OnTouchListener, View.OnClickListener {
 
     private int deltaX, deltaY;
-    String email;
     ViewGroup _root;
     ImageButton glue, roof, garage, body;
     ImageView house_result, glue_result;
@@ -45,6 +46,7 @@ public class Game5 extends Activity implements View.OnTouchListener, View.OnClic
     Button button_continue, button_back_to_lobby;
 
     SharedPreferences prefs;
+    String email;
     int time_taken;
 
     @Override
@@ -52,6 +54,7 @@ public class Game5 extends Activity implements View.OnTouchListener, View.OnClic
         super.onCreate(savedInstanceState);
         setContentView(R.layout.game5_house);
         time_taken = 0; //delete this when synced!
+
         Bundle extras = getIntent().getExtras();
         email = extras != null ? extras.getString("email") : null;
 
@@ -71,6 +74,16 @@ public class Game5 extends Activity implements View.OnTouchListener, View.OnClic
         sound.setOnClickListener(this);
         game_hint.setOnClickListener(this);
         game_reset.setOnClickListener(this);
+
+        Drawable speaker = ContextCompat.getDrawable(getApplicationContext(), R.drawable.setting_speaker);
+        Drawable muted = ContextCompat.getDrawable(getApplicationContext(), R.drawable.setting_mute);
+
+        boolean isPlaying = prefs.getBoolean("music_enabled", true);
+        if (isPlaying) {
+            sound.setImageDrawable(muted);
+        } else {
+            sound.setImageDrawable(speaker);
+        }
 
         buttonArray.add(glue);
         buttonArray.add(roof);
@@ -104,6 +117,9 @@ public class Game5 extends Activity implements View.OnTouchListener, View.OnClic
     }
 
     private void toggleMusic() {
+        Drawable speaker = ContextCompat.getDrawable(getApplicationContext(), R.drawable.setting_speaker);
+        Drawable muted = ContextCompat.getDrawable(getApplicationContext(), R.drawable.setting_mute);
+
         boolean isPlaying = prefs.getBoolean("music_enabled", true);
         SharedPreferences.Editor editor = prefs.edit();
         editor.putBoolean("music_enabled", !isPlaying);
@@ -111,13 +127,16 @@ public class Game5 extends Activity implements View.OnTouchListener, View.OnClic
 
         if (isPlaying) {
             stopService(new Intent(this, BackgroundMusic.class));
+            sound.setImageDrawable(muted);
         } else {
             startService(new Intent(this, BackgroundMusic.class));
+            sound.setImageDrawable(speaker);
         }
     }
 
+
     private void showHint() {
-        Toast.makeText(this, "Think out of the box", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "Use the glue to stick everything together", Toast.LENGTH_SHORT).show();
     }
 
     private void resetActivity() {

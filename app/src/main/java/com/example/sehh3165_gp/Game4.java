@@ -3,6 +3,7 @@ package com.example.sehh3165_gp;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.drawable.Drawable;
 import android.net.ConnectivityManager;
 import android.net.Network;
 import android.net.NetworkCapabilities;
@@ -14,6 +15,7 @@ import android.widget.ImageButton;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.preference.PreferenceManager;
 
 public class Game4 extends AppCompatActivity implements View.OnClickListener, View.OnTouchListener {
@@ -48,6 +50,16 @@ public class Game4 extends AppCompatActivity implements View.OnClickListener, Vi
         game_hint.setOnClickListener(this);
         game_reset.setOnClickListener(this);
 
+        Drawable speaker = ContextCompat.getDrawable(getApplicationContext(), R.drawable.setting_speaker);
+        Drawable muted = ContextCompat.getDrawable(getApplicationContext(), R.drawable.setting_mute);
+
+        boolean isPlaying = prefs.getBoolean("music_enabled", true);
+        if (isPlaying) {
+            sound.setImageDrawable(muted);
+        } else {
+            sound.setImageDrawable(speaker);
+        }
+
         networkPC = findViewById(R.id.imageButton_computer);
         standalonePC = findViewById(R.id.imageButton_no_wifi_computer);
 
@@ -57,7 +69,6 @@ public class Game4 extends AppCompatActivity implements View.OnClickListener, Vi
 
         router = findViewById(R.id.imageButton_router);
         router.setOnTouchListener(this);
-
         setupNetworkCallback();
     }
 
@@ -82,6 +93,9 @@ public class Game4 extends AppCompatActivity implements View.OnClickListener, Vi
     }
 
     private void toggleMusic() {
+        Drawable speaker = ContextCompat.getDrawable(getApplicationContext(), R.drawable.setting_speaker);
+        Drawable muted = ContextCompat.getDrawable(getApplicationContext(), R.drawable.setting_mute);
+
         boolean isPlaying = prefs.getBoolean("music_enabled", true);
         SharedPreferences.Editor editor = prefs.edit();
         editor.putBoolean("music_enabled", !isPlaying);
@@ -89,13 +103,15 @@ public class Game4 extends AppCompatActivity implements View.OnClickListener, Vi
 
         if (isPlaying) {
             stopService(new Intent(this, BackgroundMusic.class));
+            sound.setImageDrawable(muted);
         } else {
             startService(new Intent(this, BackgroundMusic.class));
+            sound.setImageDrawable(speaker);
         }
     }
 
     private void showHint() {
-        Toast.makeText(this, "Think out of the box", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "Try disconnecting the phone from the network", Toast.LENGTH_SHORT).show();
     }
 
     private void resetActivity() {

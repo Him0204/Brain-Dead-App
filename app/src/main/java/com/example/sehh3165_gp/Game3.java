@@ -1,7 +1,9 @@
 package com.example.sehh3165_gp;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.drawable.Drawable;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -12,13 +14,13 @@ import android.view.View;
 import android.widget.ImageButton;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.preference.PreferenceManager;
 
 public class Game3 extends AppCompatActivity implements View.OnClickListener, View.OnTouchListener, SensorEventListener {
 
     private SensorManager sensorManager;
     private Sensor lightSensor;
-
     float xAxis, yAxis, buttonX, buttonY;
     int lastAction;
 
@@ -47,6 +49,16 @@ public class Game3 extends AppCompatActivity implements View.OnClickListener, Vi
         sound.setOnClickListener(this);
         game_hint.setOnClickListener(this);
         game_reset.setOnClickListener(this);
+
+        Drawable speaker = ContextCompat.getDrawable(getApplicationContext(), R.drawable.setting_speaker);
+        Drawable muted = ContextCompat.getDrawable(getApplicationContext(), R.drawable.setting_mute);
+
+        boolean isPlaying = prefs.getBoolean("music_enabled", true);
+        if (isPlaying) {
+            sound.setImageDrawable(muted);
+        } else {
+            sound.setImageDrawable(speaker);
+        }
 
         wakeBoy = findViewById(R.id.imageButton_insomnia);
         sleepBoy = findViewById(R.id.imageButton_sleeping);
@@ -80,6 +92,9 @@ public class Game3 extends AppCompatActivity implements View.OnClickListener, Vi
     }
 
     private void toggleMusic() {
+        Drawable speaker = ContextCompat.getDrawable(getApplicationContext(), R.drawable.setting_speaker);
+        Drawable muted = ContextCompat.getDrawable(getApplicationContext(), R.drawable.setting_mute);
+
         boolean isPlaying = prefs.getBoolean("music_enabled", true);
         SharedPreferences.Editor editor = prefs.edit();
         editor.putBoolean("music_enabled", !isPlaying);
@@ -87,13 +102,15 @@ public class Game3 extends AppCompatActivity implements View.OnClickListener, Vi
 
         if (isPlaying) {
             stopService(new Intent(this, BackgroundMusic.class));
+            sound.setImageDrawable(muted);
         } else {
             startService(new Intent(this, BackgroundMusic.class));
+            sound.setImageDrawable(speaker);
         }
     }
 
     private void showHint() {
-        Toast.makeText(this, "Think out of the box", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "Try adjusting the brightness of the phone", Toast.LENGTH_SHORT).show();
     }
 
     private void resetActivity() {
@@ -114,7 +131,17 @@ public class Game3 extends AppCompatActivity implements View.OnClickListener, Vi
     @Override
     public void onResume() {
         super.onResume();
-        sensorManager.registerListener(this, lightSensor, SensorManager.SENSOR_DELAY_NORMAL);
+        // Ensure sensorManager is initialized
+        if (sensorManager == null) {
+            sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+        }
+        if (sensorManager != null) {
+            lightSensor = sensorManager.getDefaultSensor(Sensor.TYPE_LIGHT);
+            if (lightSensor != null) {
+                sensorManager.registerListener(this, lightSensor, SensorManager.SENSOR_DELAY_NORMAL);
+            }  // Consider what to do if the sensor is not available
+
+        }
         if (prefs.getBoolean("music_enabled", true)) {
             startService(new Intent(this, BackgroundMusic.class));
         }

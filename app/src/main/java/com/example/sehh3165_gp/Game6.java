@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -22,6 +23,7 @@ import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.preference.PreferenceManager;
 
 import com.airbnb.lottie.LottieAnimationView;
@@ -30,7 +32,7 @@ import java.util.List;
 
 public class Game6 extends AppCompatActivity implements View.OnTouchListener, View.OnClickListener {
     private int deltaX, deltaY;
-    private String email;
+    private float buttonX, buttonY;
     private ViewGroup _root;
     private ImageView dumbbell, fat_guy, slim_guy, janitor, vacuum, protein, vacuum_for_guy;
     ImageButton home, sound, game_hint, game_reset;
@@ -42,14 +44,18 @@ public class Game6 extends AppCompatActivity implements View.OnTouchListener, Vi
     private LottieAnimationView animationView;
 
     SharedPreferences prefs;
+    String email;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.game6_gym);
+
         initializeViews();
         configureDraggable();
-        email = getIntent().getStringExtra("email");
+
+        Bundle extras = getIntent().getExtras();
+        email = extras != null ? extras.getString("Email") : null;
 
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
         home = findViewById(R.id.imageButton_home);
@@ -60,6 +66,16 @@ public class Game6 extends AppCompatActivity implements View.OnTouchListener, Vi
         sound.setOnClickListener(this);
         game_hint.setOnClickListener(this);
         game_reset.setOnClickListener(this);
+
+        Drawable speaker = ContextCompat.getDrawable(getApplicationContext(), R.drawable.setting_speaker);
+        Drawable muted = ContextCompat.getDrawable(getApplicationContext(), R.drawable.setting_mute);
+
+        boolean isPlaying = prefs.getBoolean("music_enabled", true);
+        if (isPlaying) {
+            sound.setImageDrawable(muted);
+        } else {
+            sound.setImageDrawable(speaker);
+        }
     }
 
     private void initializeViews() {
@@ -89,6 +105,8 @@ public class Game6 extends AppCompatActivity implements View.OnTouchListener, Vi
         final int Y = (int) event.getRawY();
         switch (event.getAction() & MotionEvent.ACTION_MASK) {
             case MotionEvent.ACTION_DOWN:
+                buttonX = v.getX();
+                buttonY = v.getY();
                 RelativeLayout.LayoutParams lParams = (RelativeLayout.LayoutParams) v.getLayoutParams();
                 deltaX = X - lParams.leftMargin;
                 deltaY = Y - lParams.topMargin;
@@ -116,6 +134,9 @@ public class Game6 extends AppCompatActivity implements View.OnTouchListener, Vi
             handleFirstOverlap();
         } else if (first_overlap && checkOverlap((ImageView) v, interactionTargets)) {
             handleSecondOverlap();
+        } else {
+            v.setX(buttonX);
+            v.setY(buttonY);
         }
     }
 
@@ -217,6 +238,9 @@ public class Game6 extends AppCompatActivity implements View.OnTouchListener, Vi
     }
 
     private void toggleMusic() {
+        Drawable speaker = ContextCompat.getDrawable(getApplicationContext(), R.drawable.setting_speaker);
+        Drawable muted = ContextCompat.getDrawable(getApplicationContext(), R.drawable.setting_mute);
+
         boolean isPlaying = prefs.getBoolean("music_enabled", true);
         SharedPreferences.Editor editor = prefs.edit();
         editor.putBoolean("music_enabled", !isPlaying);
@@ -224,13 +248,15 @@ public class Game6 extends AppCompatActivity implements View.OnTouchListener, Vi
 
         if (isPlaying) {
             stopService(new Intent(this, BackgroundMusic.class));
+            sound.setImageDrawable(muted);
         } else {
             startService(new Intent(this, BackgroundMusic.class));
+            sound.setImageDrawable(speaker);
         }
     }
 
     private void showHint() {
-        Toast.makeText(this, "Think out of the box", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "Do you know vacuums can suck fat? All you have to do is to get the vacuum from the janitor…", Toast.LENGTH_SHORT).show();
     }
 
     private void resetActivity() {

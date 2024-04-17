@@ -52,6 +52,16 @@ public class Game7 extends AppCompatActivity implements View.OnClickListener {
         game_hint.setOnClickListener(this);
         game_reset.setOnClickListener(this);
 
+        Drawable speaker = ContextCompat.getDrawable(getApplicationContext(), R.drawable.setting_speaker);
+        Drawable muted = ContextCompat.getDrawable(getApplicationContext(), R.drawable.setting_mute);
+
+        boolean isPlaying = prefs.getBoolean("music_enabled", true);
+        if (isPlaying) {
+            sound.setImageDrawable(muted);
+        } else {
+            sound.setImageDrawable(speaker);
+        }
+
         whiteMic = findViewById(R.id.image_mic_white);
         canHear = findViewById(R.id.old_ppl_msg_hear);
         cannotHear = findViewById(R.id.old_ppl_msg);
@@ -149,6 +159,9 @@ public class Game7 extends AppCompatActivity implements View.OnClickListener {
     }
 
     private void toggleMusic() {
+        Drawable speaker = ContextCompat.getDrawable(getApplicationContext(), R.drawable.setting_speaker);
+        Drawable muted = ContextCompat.getDrawable(getApplicationContext(), R.drawable.setting_mute);
+
         boolean isPlaying = prefs.getBoolean("music_enabled", true);
         SharedPreferences.Editor editor = prefs.edit();
         editor.putBoolean("music_enabled", !isPlaying);
@@ -156,13 +169,15 @@ public class Game7 extends AppCompatActivity implements View.OnClickListener {
 
         if (isPlaying) {
             stopService(new Intent(this, BackgroundMusic.class));
+            sound.setImageDrawable(muted);
         } else {
             startService(new Intent(this, BackgroundMusic.class));
+            sound.setImageDrawable(speaker);
         }
     }
 
     private void showHint() {
-        Toast.makeText(this, "Think out of the box", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "Grandpa cannot hear you… speak LOUDER!", Toast.LENGTH_SHORT).show();
     }
 
     private void resetActivity() {

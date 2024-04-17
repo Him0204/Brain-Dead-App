@@ -2,34 +2,45 @@ package com.example.sehh3165_gp;
 
 import android.content.Context;
 import android.content.Intent;
-import android.net.ConnectivityManager;
-import android.net.Network;
-import android.net.NetworkCapabilities;
+import android.content.SharedPreferences;
+import android.graphics.drawable.Drawable;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.os.Bundle;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
+import androidx.preference.PreferenceManager;
 
-public class Game1 extends AppCompatActivity implements View.OnClickListener, View.OnTouchListener {
+public class Game1 extends AppCompatActivity implements View.OnClickListener, SensorEventListener {
 
-    float xAxis, yAxis, buttonX, buttonY;
-    int lastAction;
-
+    private ImageButton imageButton_EmptyCup;
     ImageButton home, sound, game_hint, game_reset;
-    ImageButton networkPC, standalonePC, router;
+    private SensorManager sensorManager;
+    private Sensor orientationSensor;
+    private float[] lastAccelerometer = new float[3];
+    private float[] lastMagnetometer = new float[3];
+    private boolean lastAccelerometerSet = false;
+    private boolean lastMagnetometerSet = false;
+    private float[] rotationMatrix = new float[9];
+    private float[] orientationAngles = new float[3];
 
+    SharedPreferences prefs;
     String email;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.game4_computer);
+        setContentView(R.layout.game1_cup);
 
         Bundle extras = getIntent().getExtras();
         email = extras != null ? extras.getString("Email") : null;
 
+        prefs = PreferenceManager.getDefaultSharedPreferences(this);
         home = findViewById(R.id.imageButton_home);
         sound = findViewById(R.id.imageButton_sound);
         game_hint = findViewById(R.id.imageButton_hint);
@@ -39,98 +50,148 @@ public class Game1 extends AppCompatActivity implements View.OnClickListener, Vi
         game_hint.setOnClickListener(this);
         game_reset.setOnClickListener(this);
 
-        networkPC = findViewById(R.id.imageButton_computer);
-        standalonePC = findViewById(R.id.imageButton_no_wifi_computer);
-        router = findViewById(R.id.imageButton_router);
-        router.setOnTouchListener(this);
+        Drawable speaker = ContextCompat.getDrawable(getApplicationContext(), R.drawable.setting_speaker);
+        Drawable muted = ContextCompat.getDrawable(getApplicationContext(), R.drawable.setting_mute);
 
+        boolean isPlaying = prefs.getBoolean("music_enabled", true);
+        if (isPlaying) {
+            sound.setImageDrawable(muted);
+        } else {
+            sound.setImageDrawable(speaker);
+        }
+
+        imageButton_EmptyCup = findViewById(R.id.imageButton_EmptyCup);
+        sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+        orientationSensor = sensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR);
+        if (orientationSensor != null) {
+            sensorManager.registerListener(this, orientationSensor, SensorManager.SENSOR_DELAY_NORMAL);
+        } else {
+            Toast.makeText(this, "Rotation vector sensor not available; defaulting to accelerometer + magnetometer", Toast.LENGTH_LONG).show();
+            // Fallback if rotation vector sensor is not available
+            Sensor accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+            Sensor magnetometer = sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
+            sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_NORMAL);
+            sensorManager.registerListener(this, magnetometer, SensorManager.SENSOR_DELAY_NORMAL);
+        }
     }
 
     @Override
-    public boolean onTouch(View v, MotionEvent event) {
-        switch (event.getActionMasked()) {
-            case MotionEvent.ACTION_DOWN:
-                buttonX = v.getX();
-                buttonY = v.getY();
-                xAxis = buttonX - event.getRawX();
-                yAxis = buttonY - event.getRawY();
-                lastAction = MotionEvent.ACTION_DOWN;
-                break;
-            case MotionEvent.ACTION_MOVE:
-                v.setX(event.getRawX() + xAxis);
-                v.setY(event.getRawY() + yAxis);
-                lastAction = MotionEvent.ACTION_MOVE;
-                break;
-            case MotionEvent.ACTION_UP:
-                if (lastAction == MotionEvent.ACTION_MOVE) {
-                    if (Overlapped(v, networkPC) || Overlapped(v, standalonePC)) {
-                        Toast.makeText(this, "X", Toast.LENGTH_SHORT).show();
-                    }
-                    v.performClick();
-                    v.setX(buttonX);
-                    v.setY(buttonY);
+    public void onSensorChanged(SensorEvent event) {
+        if (event.sensor.getType() == Sensor.TYPE_ROTATION_VECTOR) {
+            SensorManager.getRotationMatrixFromVector(rotationMatrix, event.values);
+            SensorManager.getOrientation(rotationMatrix, orientationAngles);
+            float azimuthInRadians = orientationAngles[0];
+            float azimuthInDegress = (float) Math.toDegrees(azimuthInRadians);
+
+            // Check for 90 degree anticlockwise rotation
+            if (azimuthInDegress < -80 && azimuthInDegress > -100) {
+                win();
+            }
+        } else {
+            if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
+                System.arraycopy(event.values, 0, lastAccelerometer, 0, event.values.length);
+                lastAccelerometerSet = true;
+            } else if (event.sensor.getType() == Sensor.TYPE_MAGNETIC_FIELD) {
+                System.arraycopy(event.values, 0, lastMagnetometer, 0, event.values.length);
+                lastMagnetometerSet = true;
+            }
+            if (lastAccelerometerSet && lastMagnetometerSet) {
+                SensorManager.getRotationMatrix(rotationMatrix, null, lastAccelerometer, lastMagnetometer);
+                SensorManager.getOrientation(rotationMatrix, orientationAngles);
+                float azimuthInRadians = orientationAngles[0];
+                float azimuthInDegress = (float) Math.toDegrees(azimuthInRadians);
+
+                if (azimuthInDegress < -80 && azimuthInDegress > -100) {
+                    win();
                 }
-                break;
-            default:
-                return false;
+            }
         }
-        return true;
+    }
+
+    private void win() {
+        imageButton_EmptyCup.setVisibility(View.INVISIBLE);
+        Toast.makeText(this, "You filled the cup!", Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public void onClick(View v) {
-        if (v.getId() == R.id.imageButton_home) {
-            Intent i = new Intent(Game1.this, LobbyPage.class);
-            i.putExtra("Email", email);
-            startActivity(i);
-        }
-        else if (v.getId() == R.id.imageButton_sound) {
-            Intent musicIntent = new Intent(this, BackgroundMusic.class);
-            stopService(musicIntent);
-        }
-        else if (v.getId() == R.id.imageButton_hint) {
-            Toast.makeText(Game1.this, "Think out of the box", Toast.LENGTH_SHORT).show();
-        }
-        else if (v.getId() == R.id.imageButton_reset) {
-            Intent i = new Intent(this, Game1.class);
-            i.putExtra("Email", email);
-            startActivity(i);
-            finish();
+        int id = v.getId();
+        if (id == R.id.imageButton_home) {
+            navigateHome();
+        } else if (id == R.id.imageButton_sound) {
+            toggleMusic();
+        } else if (id == R.id.imageButton_hint) {
+            showHint();
+        } else if (id == R.id.imageButton_reset) {
+            resetActivity();
         }
     }
 
-    private boolean Overlapped(View firstView, View secondView) {
-        int[] firstPosition = new int[2];
-        int[] secondPosition = new int[2];
-
-        firstView.getLocationOnScreen(firstPosition);
-        secondView.getLocationOnScreen(secondPosition);
-
-        int firstViewRight = firstPosition[0] + firstView.getWidth();
-        int firstViewBottom = firstPosition[1] + firstView.getHeight();
-        int secondViewRight = secondPosition[0] + secondView.getWidth();
-        int secondViewBottom = secondPosition[1] + secondView.getHeight();
-
-        return !(firstPosition[0] > secondViewRight || firstViewRight < secondPosition[0] ||
-                firstPosition[1] > secondViewBottom || firstViewBottom < secondPosition[1]);
+    private void navigateHome() {
+        Intent i = new Intent(Game1.this, LobbyPage.class);
+        i.putExtra("Email", email);
+        startActivity(i);
     }
 
-    private boolean isInternetAvailable() {
-        ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        if (connectivityManager != null) {
-            Network network = connectivityManager.getActiveNetwork();
-            if (network != null) {
-                NetworkCapabilities capabilities = connectivityManager.getNetworkCapabilities(network);
-                return capabilities != null && capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET);
-            }
+    private void toggleMusic() {
+        Drawable speaker = ContextCompat.getDrawable(getApplicationContext(), R.drawable.setting_speaker);
+        Drawable muted = ContextCompat.getDrawable(getApplicationContext(), R.drawable.setting_mute);
+
+        boolean isPlaying = prefs.getBoolean("music_enabled", true);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putBoolean("music_enabled", !isPlaying);
+        editor.apply();
+
+        if (isPlaying) {
+            stopService(new Intent(this, BackgroundMusic.class));
+            sound.setImageDrawable(muted);
+        } else {
+            startService(new Intent(this, BackgroundMusic.class));
+            sound.setImageDrawable(speaker);
         }
-        return false;
     }
 
-    private void win() {
-        Toast.makeText(this,  "v", Toast.LENGTH_SHORT).show();
-        //wakeBoy.setVisibility(View.INVISIBLE);
-        //sleepBoy.setVisibility(View.VISIBLE);
+    private void showHint() {
+        Toast.makeText(this, "Try tilting the phone", Toast.LENGTH_SHORT).show();
     }
 
+    private void resetActivity() {
+        Intent i = new Intent(this, Game1.class);
+        i.putExtra("Email", email);
+        startActivity(i);
+        finish();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        sensorManager.unregisterListener(this);
+        if (prefs.getBoolean("music_enabled", true)) {
+            stopService(new Intent(this, BackgroundMusic.class));
+        }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        // Ensure sensorManager is initialized
+        if (sensorManager == null) {
+            sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+        }
+        if (sensorManager != null) {
+            orientationSensor = sensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR);
+            if (orientationSensor != null) {
+                sensorManager.registerListener(this, orientationSensor, SensorManager.SENSOR_DELAY_NORMAL);
+            }  // Consider what to do if the sensor is not available
+
+        }
+        if (prefs.getBoolean("music_enabled", true)) {
+            startService(new Intent(this, BackgroundMusic.class));
+        }
+    }
+
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int accuracy) {
+        // Not used
+    }
 }

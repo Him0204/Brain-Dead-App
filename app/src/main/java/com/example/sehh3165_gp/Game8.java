@@ -4,8 +4,10 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ObjectAnimator;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
@@ -20,17 +22,21 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
+import androidx.preference.PreferenceManager;
 
 import com.airbnb.lottie.LottieAnimationView;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class Game8 extends AppCompatActivity implements View.OnTouchListener {
+public class Game8 extends AppCompatActivity implements View.OnTouchListener, View.OnClickListener {
 
     private int deltaX, deltaY;
+    private float buttonX, buttonY;
     private String email;
     private ViewGroup _root;
     private MediaPlayer bgm, bgm_laser;
@@ -43,11 +49,13 @@ public class Game8 extends AppCompatActivity implements View.OnTouchListener {
     private ImageButton equipped_gun;
     private ImageButton monster;
     private ImageView laser_beam;
+    ImageButton home, sound, game_hint, game_reset;
 
     private LottieAnimationView animationView;
     private View progress_menu;
     private Button button_continue;
 
+    SharedPreferences prefs;
     private final int time_taken = 0;
 
     @Override
@@ -55,6 +63,7 @@ public class Game8 extends AppCompatActivity implements View.OnTouchListener {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.game8_fight);
 
+        prefs = PreferenceManager.getDefaultSharedPreferences(this);
         Bundle extras = getIntent().getExtras();
         email = extras != null ? extras.getString("email") : null;
 
@@ -63,6 +72,25 @@ public class Game8 extends AppCompatActivity implements View.OnTouchListener {
         bgm = MediaPlayer.create(this, R.raw.stage8_background_music);
         bgm.start();
         bgm.setLooping(true);
+
+        home = findViewById(R.id.imageButton_home);
+        sound = findViewById(R.id.imageButton_sound);
+        game_hint = findViewById(R.id.imageButton_hint);
+        game_reset = findViewById(R.id.imageButton_reset);
+        home.setOnClickListener(this);
+        sound.setOnClickListener(this);
+        game_hint.setOnClickListener(this);
+        game_reset.setOnClickListener(this);
+
+        Drawable speaker = ContextCompat.getDrawable(getApplicationContext(), R.drawable.setting_speaker);
+        Drawable muted = ContextCompat.getDrawable(getApplicationContext(), R.drawable.setting_mute);
+
+        boolean isPlaying = prefs.getBoolean("music_enabled", true);
+        if (isPlaying) {
+            sound.setImageDrawable(muted);
+        } else {
+            sound.setImageDrawable(speaker);
+        }
 
         sun = findViewById(R.id.sun);
         unequipped_gun = findViewById(R.id.unequipped_gun);
@@ -102,6 +130,8 @@ public class Game8 extends AppCompatActivity implements View.OnTouchListener {
         final int Y = (int) event.getRawY();
         switch (event.getAction() & MotionEvent.ACTION_MASK) {
             case MotionEvent.ACTION_DOWN:
+                buttonX = v.getX();
+                buttonY = v.getY();
                 RelativeLayout.LayoutParams lParams = (RelativeLayout.LayoutParams) v.getLayoutParams();
                 deltaX = X - lParams.leftMargin;
                 deltaY = Y - lParams.topMargin;
@@ -118,6 +148,10 @@ public class Game8 extends AppCompatActivity implements View.OnTouchListener {
                     unequipped_gun.setVisibility(View.GONE);
                 } else if (checkOverlap((ImageButton) v, buttonArray1)) {
                     executeLaserSequence();
+                } else {
+                    v.performClick();
+                    v.setX(buttonX);
+                    v.setY(buttonY);
                 }
                 break;
         }
@@ -213,4 +247,54 @@ public class Game8 extends AppCompatActivity implements View.OnTouchListener {
         }
         handler.removeCallbacksAndMessages(null);
     }
+
+    @Override
+    public void onClick(View v) {
+        int id = v.getId();
+        if (id == R.id.imageButton_home) {
+            navigateHome();
+        } else if (id == R.id.imageButton_sound) {
+            toggleMusic();
+        } else if (id == R.id.imageButton_hint) {
+            showHint();
+        } else if (id == R.id.imageButton_reset) {
+            resetActivity();
+        }
+    }
+
+    private void navigateHome() {
+        Intent i = new Intent(Game8.this, LobbyPage.class);
+        i.putExtra("Email", email);
+        startActivity(i);
+    }
+
+    private void toggleMusic() {
+        Drawable speaker = ContextCompat.getDrawable(getApplicationContext(), R.drawable.setting_speaker);
+        Drawable muted = ContextCompat.getDrawable(getApplicationContext(), R.drawable.setting_mute);
+
+        boolean isPlaying = prefs.getBoolean("music_enabled", true);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putBoolean("music_enabled", !isPlaying);
+        editor.apply();
+
+        if (isPlaying) {
+            stopService(new Intent(this, BackgroundMusic.class));
+            sound.setImageDrawable(muted);
+        } else {
+            startService(new Intent(this, BackgroundMusic.class));
+            sound.setImageDrawable(speaker);
+        }
+    }
+
+    private void showHint() {
+        Toast.makeText(this, "The gun needs energy to fire at the monster… which one has the most energy?", Toast.LENGTH_SHORT).show();
+    }
+
+    private void resetActivity() {
+        Intent i = new Intent(this, Game8.class);
+        i.putExtra("Email", email);
+        startActivity(i);
+        finish();
+    }
+
 }

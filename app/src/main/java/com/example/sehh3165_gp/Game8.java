@@ -1,33 +1,57 @@
 package com.example.sehh3165_gp;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.ObjectAnimator;
+import android.content.Intent;
 import android.graphics.Rect;
+import android.graphics.drawable.ColorDrawable;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
+
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.airbnb.lottie.LottieAnimationView;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class Game8 extends AppCompatActivity implements View.OnTouchListener {
 
     private int deltaX, deltaY;
-    String email;
-    ViewGroup _root;
-    MediaPlayer bgm, bgm_laser;
-    Handler handler = new Handler(Looper.getMainLooper());
-    List<ImageButton> buttonArray = new ArrayList<>();
-    List<ImageButton> buttonArray1 = new ArrayList<>();
+    private String email;
+    private ViewGroup _root;
+    private MediaPlayer bgm, bgm_laser;
+    private final Handler handler = new Handler(Looper.getMainLooper());
+    private final List<ImageButton> buttonArray = new ArrayList<>();
+    private final List<ImageButton> buttonArray1 = new ArrayList<>();
 
-    ImageButton sun, unequipped_gun, sword, hammer, equipped_gun, person;
+    private ImageButton sun;
+    private ImageButton unequipped_gun;
+    private ImageButton equipped_gun;
+    private ImageButton monster;
+    private ImageView laser_beam;
+
+    private LottieAnimationView animationView;
+    private View progress_menu;
+    private Button button_continue;
+
+    private final int time_taken = 0;
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.game8_fight);
 
@@ -42,10 +66,10 @@ public class Game8 extends AppCompatActivity implements View.OnTouchListener {
 
         sun = findViewById(R.id.sun);
         unequipped_gun = findViewById(R.id.unequipped_gun);
-        sword = findViewById(R.id.sword);
-        hammer = findViewById(R.id.hammer);
+        ImageButton sword = findViewById(R.id.sword);
+        ImageButton hammer = findViewById(R.id.hammer);
         equipped_gun = findViewById(R.id.equipped_gun);
-        person = findViewById(R.id.person);
+        ImageButton person = findViewById(R.id.person);
 
         buttonArray.add(unequipped_gun);
         buttonArray.add(person);
@@ -125,7 +149,55 @@ public class Game8 extends AppCompatActivity implements View.OnTouchListener {
     }
 
     private void executeLaserSequence() {
-        // Sequence logic goes here
+        sun.setVisibility(View.GONE);
+        bgm.setLooping(false);
+        bgm.stop();
+        bgm_laser = MediaPlayer.create(this, R.raw.stage8_laser);
+        bgm_laser.start();
+
+        handler.postDelayed(() -> {
+            laser_beam = findViewById(R.id.laser_beam);
+            monster = findViewById(R.id.monster);
+            laser_beam.setVisibility(View.VISIBLE);
+            new Handler(Looper.getMainLooper()).postDelayed(() -> {
+                laser_beam.setVisibility(View.INVISIBLE);
+                monster.animate().alpha(0f).setDuration(1000).start();
+            }, 2900);
+        }, 3100);
+
+        handler.postDelayed(() -> {
+            PopupWindow popupWindow = new PopupWindow(Game8.this);
+            LayoutInflater inflater = LayoutInflater.from(Game8.this);
+            View newLayout = inflater.inflate(R.layout.gameover, null);
+            popupWindow.setBackgroundDrawable(new ColorDrawable(0xCC000000)); // Semi-transparent
+            popupWindow.setContentView(newLayout);
+            popupWindow.setWidth(ViewGroup.LayoutParams.MATCH_PARENT);
+            popupWindow.setHeight(ViewGroup.LayoutParams.MATCH_PARENT);
+            popupWindow.setFocusable(true);
+            popupWindow.showAtLocation(findViewById(android.R.id.content), Gravity.CENTER, 0, 0);
+            animationView = newLayout.findViewById(R.id.animation_view);
+            animationView.addAnimatorListener(new AnimatorListenerAdapter() {
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    animationView.animate().alpha(0f).withEndAction(() -> {
+                        animationView.setVisibility(View.GONE);
+                        progress_menu = newLayout.findViewById(R.id.progress_menu);
+                        progress_menu.setVisibility(View.VISIBLE);
+                        DatabaseHelper dbHelper = new DatabaseHelper(getApplicationContext());
+                        dbHelper.updateStatus(email, "8", String.valueOf(time_taken));
+                        button_continue = newLayout.findViewById(R.id.button_continue);
+                        button_continue.setOnClickListener(v1 -> {
+                            Intent i = new Intent(Game8.this, LobbyPage.class);
+                            i.putExtra("email", email);
+                            startActivity(i);
+                        });
+                        ObjectAnimator fadeInAnimator = ObjectAnimator.ofFloat(progress_menu, "alpha", 0f, 1f);
+                        fadeInAnimator.setDuration(1000); // 1 second
+                        fadeInAnimator.start();
+                    }).start();
+                }
+            });
+        }, 6800);
     }
 
     @Override

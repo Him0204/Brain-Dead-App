@@ -2,6 +2,8 @@ package com.example.sehh3165_gp;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
 import android.media.AudioFormat;
@@ -9,25 +11,46 @@ import android.media.AudioRecord;
 import android.media.MediaRecorder;
 import android.os.Bundle;
 import android.view.MotionEvent;
+import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.preference.PreferenceManager;
 
-public class Game7 extends AppCompatActivity {
+public class Game7 extends AppCompatActivity implements View.OnClickListener {
 
     private static final int SAMPLE_RATE = 44100; // Can be adjusted
     private AudioRecord audioRecorder;
     private boolean isRecording = false;
     private ImageButton whiteMic;
     private TextView canHear, cannotHear;
+    ImageButton home, sound, game_hint, game_reset;
+
+    SharedPreferences prefs;
+    String email;
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.game7_speak);
+
+        Bundle extras = getIntent().getExtras();
+        email = extras != null ? extras.getString("Email") : null;
+
+        prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        home = findViewById(R.id.imageButton_home);
+        sound = findViewById(R.id.imageButton_sound);
+        game_hint = findViewById(R.id.imageButton_hint);
+        game_reset = findViewById(R.id.imageButton_reset);
+        home.setOnClickListener(this);
+        sound.setOnClickListener(this);
+        game_hint.setOnClickListener(this);
+        game_reset.setOnClickListener(this);
 
         whiteMic = findViewById(R.id.image_mic_white);
         canHear = findViewById(R.id.old_ppl_msg_hear);
@@ -95,7 +118,8 @@ public class Game7 extends AppCompatActivity {
             for (int i = 0; i < readSize; i++) {
                 maxAmplitude = Math.max(maxAmplitude, Math.abs(buffer[i]));
             }
-            if (maxAmplitude > 10000) {
+            if (maxAmplitude > 10) {
+                Toast.makeText(this, String.valueOf(maxAmplitude), Toast.LENGTH_SHORT).show();
                 runOnUiThread(() -> {
                     cannotHear.setVisibility(TextView.INVISIBLE);
                     canHear.setVisibility(TextView.VISIBLE);
@@ -103,4 +127,65 @@ public class Game7 extends AppCompatActivity {
             }
         }
     }
+
+    @Override
+    public void onClick(View v) {
+        int id = v.getId();
+        if (id == R.id.imageButton_home) {
+            navigateHome();
+        } else if (id == R.id.imageButton_sound) {
+            toggleMusic();
+        } else if (id == R.id.imageButton_hint) {
+            showHint();
+        } else if (id == R.id.imageButton_reset) {
+            resetActivity();
+        }
+    }
+
+    private void navigateHome() {
+        Intent i = new Intent(Game7.this, LobbyPage.class);
+        i.putExtra("Email", email);
+        startActivity(i);
+    }
+
+    private void toggleMusic() {
+        boolean isPlaying = prefs.getBoolean("music_enabled", true);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putBoolean("music_enabled", !isPlaying);
+        editor.apply();
+
+        if (isPlaying) {
+            stopService(new Intent(this, BackgroundMusic.class));
+        } else {
+            startService(new Intent(this, BackgroundMusic.class));
+        }
+    }
+
+    private void showHint() {
+        Toast.makeText(this, "Think out of the box", Toast.LENGTH_SHORT).show();
+    }
+
+    private void resetActivity() {
+        Intent i = new Intent(this, Game7.class);
+        i.putExtra("Email", email);
+        startActivity(i);
+        finish();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        if (prefs.getBoolean("music_enabled", true)) {
+            stopService(new Intent(this, BackgroundMusic.class));
+        }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (prefs.getBoolean("music_enabled", true)) {
+            startService(new Intent(this, BackgroundMusic.class));
+        }
+    }
+
 }

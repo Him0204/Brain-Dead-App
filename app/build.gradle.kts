@@ -29,7 +29,7 @@ android {
 }
 
 dependencies {
-
+    implementation("androidx.preference:preference:1.2.1")// Check for the latest version on the official site
     implementation("androidx.appcompat:appcompat:1.6.1")
     implementation("com.google.android.material:material:1.11.0")
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")

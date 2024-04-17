@@ -1,6 +1,7 @@
 package com.example.sehh3165_gp;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -11,6 +12,7 @@ import android.view.View;
 import android.widget.ImageButton;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.preference.PreferenceManager;
 
 public class Game3 extends AppCompatActivity implements View.OnClickListener, View.OnTouchListener, SensorEventListener {
 
@@ -23,6 +25,7 @@ public class Game3 extends AppCompatActivity implements View.OnClickListener, Vi
     ImageButton home, sound, game_hint, game_reset;
     ImageButton wakeBoy, sleepBoy, Obj, Obj2, Obj3;
 
+    SharedPreferences prefs;
     String email;
 
     @Override
@@ -31,6 +34,7 @@ public class Game3 extends AppCompatActivity implements View.OnClickListener, Vi
         setContentView(R.layout.game3_sleep);
         sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
         lightSensor = sensorManager.getDefaultSensor(Sensor.TYPE_LIGHT);
+        prefs = PreferenceManager.getDefaultSharedPreferences(this);
 
         Bundle extras = getIntent().getExtras();
         email = extras != null ? extras.getString("Email") : null;
@@ -53,6 +57,67 @@ public class Game3 extends AppCompatActivity implements View.OnClickListener, Vi
         Obj2.setOnTouchListener(this);
         Obj3.setOnTouchListener(this);
 
+    }
+
+    @Override
+    public void onClick(View v) {
+        int id = v.getId();
+        if (id == R.id.imageButton_home) {
+            navigateHome();
+        } else if (id == R.id.imageButton_sound) {
+            toggleMusic();
+        } else if (id == R.id.imageButton_hint) {
+            showHint();
+        } else if (id == R.id.imageButton_reset) {
+            resetActivity();
+        }
+    }
+
+    private void navigateHome() {
+        Intent i = new Intent(Game3.this, LobbyPage.class);
+        i.putExtra("Email", email);
+        startActivity(i);
+    }
+
+    private void toggleMusic() {
+        boolean isPlaying = prefs.getBoolean("music_enabled", true);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putBoolean("music_enabled", !isPlaying);
+        editor.apply();
+
+        if (isPlaying) {
+            stopService(new Intent(this, BackgroundMusic.class));
+        } else {
+            startService(new Intent(this, BackgroundMusic.class));
+        }
+    }
+
+    private void showHint() {
+        Toast.makeText(this, "Think out of the box", Toast.LENGTH_SHORT).show();
+    }
+
+    private void resetActivity() {
+        Intent i = new Intent(this, Game3.class);
+        i.putExtra("Email", email);
+        startActivity(i);
+        finish();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        if (prefs.getBoolean("music_enabled", true)) {
+            stopService(new Intent(this, BackgroundMusic.class));
+        }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        sensorManager.registerListener(this, lightSensor, SensorManager.SENSOR_DELAY_NORMAL);
+        if (prefs.getBoolean("music_enabled", true)) {
+            startService(new Intent(this, BackgroundMusic.class));
+        }
     }
 
     @Override
@@ -86,28 +151,6 @@ public class Game3 extends AppCompatActivity implements View.OnClickListener, Vi
         return true;
     }
 
-    @Override
-    public void onClick(View v) {
-        if (v.getId() == R.id.imageButton_home) {
-            Intent i = new Intent(Game3.this, LobbyPage.class);
-            i.putExtra("Email", email);
-            startActivity(i);
-        }
-        else if (v.getId() == R.id.imageButton_sound) {
-            Intent musicIntent = new Intent(this, BackgroundMusic.class);
-            stopService(musicIntent);
-        }
-        else if (v.getId() == R.id.imageButton_hint) {
-            Toast.makeText(Game3.this, "Think out of the box", Toast.LENGTH_SHORT).show();
-        }
-        else if (v.getId() == R.id.imageButton_reset) {
-            Intent i = new Intent(this, Game3.class);
-            i.putExtra("Email", email);
-            startActivity(i);
-            finish();
-        }
-    }
-
     private boolean Overlapped(View firstView, View secondView) {
         int[] firstPosition = new int[2];
         int[] secondPosition = new int[2];
@@ -122,12 +165,6 @@ public class Game3 extends AppCompatActivity implements View.OnClickListener, Vi
 
         return !(firstPosition[0] > secondViewRight || firstViewRight < secondPosition[0] ||
                 firstPosition[1] > secondViewBottom || firstViewBottom < secondPosition[1]);
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        sensorManager.registerListener(this, lightSensor, SensorManager.SENSOR_DELAY_NORMAL);
     }
 
     @Override

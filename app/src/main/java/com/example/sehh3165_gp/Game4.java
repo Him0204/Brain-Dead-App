@@ -2,6 +2,7 @@ package com.example.sehh3165_gp;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.Network;
 import android.net.NetworkCapabilities;
@@ -11,7 +12,9 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.Toast;
+
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.preference.PreferenceManager;
 
 public class Game4 extends AppCompatActivity implements View.OnClickListener, View.OnTouchListener {
 
@@ -22,6 +25,7 @@ public class Game4 extends AppCompatActivity implements View.OnClickListener, Vi
     ImageButton home, sound, game_hint, game_reset;
     ImageButton networkPC, standalonePC, router;
 
+    SharedPreferences prefs;
     String email;
     private ConnectivityManager connectivityManager;
     private ConnectivityManager.NetworkCallback networkCallback;
@@ -30,6 +34,7 @@ public class Game4 extends AppCompatActivity implements View.OnClickListener, Vi
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.game4_computer);
+        prefs = PreferenceManager.getDefaultSharedPreferences(this);
 
         Bundle extras = getIntent().getExtras();
         email = extras != null ? extras.getString("Email") : null;
@@ -54,6 +59,66 @@ public class Game4 extends AppCompatActivity implements View.OnClickListener, Vi
         router.setOnTouchListener(this);
 
         setupNetworkCallback();
+    }
+
+    @Override
+    public void onClick(View v) {
+        int id = v.getId();
+        if (id == R.id.imageButton_home) {
+            navigateHome();
+        } else if (id == R.id.imageButton_sound) {
+            toggleMusic();
+        } else if (id == R.id.imageButton_hint) {
+            showHint();
+        } else if (id == R.id.imageButton_reset) {
+            resetActivity();
+        }
+    }
+
+    private void navigateHome() {
+        Intent i = new Intent(Game4.this, LobbyPage.class);
+        i.putExtra("Email", email);
+        startActivity(i);
+    }
+
+    private void toggleMusic() {
+        boolean isPlaying = prefs.getBoolean("music_enabled", true);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putBoolean("music_enabled", !isPlaying);
+        editor.apply();
+
+        if (isPlaying) {
+            stopService(new Intent(this, BackgroundMusic.class));
+        } else {
+            startService(new Intent(this, BackgroundMusic.class));
+        }
+    }
+
+    private void showHint() {
+        Toast.makeText(this, "Think out of the box", Toast.LENGTH_SHORT).show();
+    }
+
+    private void resetActivity() {
+        Intent i = new Intent(this, Game4.class);
+        i.putExtra("Email", email);
+        startActivity(i);
+        finish();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        if (prefs.getBoolean("music_enabled", true)) {
+            stopService(new Intent(this, BackgroundMusic.class));
+        }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (prefs.getBoolean("music_enabled", true)) {
+            startService(new Intent(this, BackgroundMusic.class));
+        }
     }
 
     @Override
@@ -91,28 +156,6 @@ public class Game4 extends AppCompatActivity implements View.OnClickListener, Vi
                 return false;
         }
         return true;
-    }
-
-    @Override
-    public void onClick(View v) {
-        if (v.getId() == R.id.imageButton_home) {
-            Intent i = new Intent(Game4.this, LobbyPage.class);
-            i.putExtra("Email", email);
-            startActivity(i);
-        }
-        else if (v.getId() == R.id.imageButton_sound) {
-            Intent musicIntent = new Intent(this, BackgroundMusic.class);
-            stopService(musicIntent);
-        }
-        else if (v.getId() == R.id.imageButton_hint) {
-            Toast.makeText(Game4.this, "Think out of the box", Toast.LENGTH_SHORT).show();
-        }
-        else if (v.getId() == R.id.imageButton_reset) {
-            Intent i = new Intent(this, Game4.class);
-            i.putExtra("Email", email);
-            startActivity(i);
-            finish();
-        }
     }
 
     private void setupNetworkCallback() {

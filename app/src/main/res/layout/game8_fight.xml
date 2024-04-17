@@ -42,7 +42,7 @@
                 android:layout_marginTop="240dp"
                 android:background="?android:attr/activatedBackgroundIndicator"
                 android:scaleType="fitCenter"
-                android:src="@drawable/angry_person" />
+                android:src="@drawable/g8_angry_person" />
 
             <ImageButton
                 android:id="@+id/equipped_gun"
@@ -54,7 +54,7 @@
                 android:background="?android:attr/activatedBackgroundIndicator"
                 android:scaleType="fitCenter"
                 android:visibility="gone"
-                android:src="@drawable/gun" />
+                android:src="@drawable/g8_gun" />
         </RelativeLayout>
 
 
@@ -76,7 +76,7 @@
             android:layout_marginStart="270dp"
             android:background="?android:attr/activatedBackgroundIndicator"
             android:scaleType="fitCenter"
-            android:src="@drawable/monster" />
+            android:src="@drawable/g8_monster" />
 
         <ImageButton
             android:id="@+id/table"
@@ -86,7 +86,7 @@
             android:layout_marginStart="180dp"
             android:background="?android:attr/activatedBackgroundIndicator"
             android:scaleType="fitCenter"
-            android:src="@drawable/table" />
+            android:src="@drawable/g8_table" />
 
         <ImageButton
             android:id="@+id/unequipped_gun"
@@ -97,7 +97,7 @@
             android:rotation="270"
             android:background="?android:attr/activatedBackgroundIndicator"
             android:scaleType="fitCenter"
-            android:src="@drawable/gun" />
+            android:src="@drawable/g8_gun" />
 
         <ImageButton
             android:id="@+id/sword"
@@ -107,7 +107,7 @@
             android:layout_marginTop="280dp"
             android:background="?android:attr/activatedBackgroundIndicator"
             android:scaleType="fitCenter"
-            android:src="@drawable/sword" />
+            android:src="@drawable/g8_sword" />
 
         <ImageButton
             android:id="@+id/hammer"
@@ -117,7 +117,7 @@
             android:layout_marginTop="280dp"
             android:background="?android:attr/activatedBackgroundIndicator"
             android:scaleType="fitCenter"
-            android:src="@drawable/hammer" />
+            android:src="@drawable/g8_hammer" />
 
         <ImageButton
             android:id="@+id/sun"
@@ -127,7 +127,7 @@
             android:layout_marginStart="20dp"
             android:background="?android:attr/activatedBackgroundIndicator"
             android:scaleType="fitCenter"
-            android:src="@drawable/sun" />
+            android:src="@drawable/g8_sun" />
 
         <ImageView
             android:id="@+id/laser_beam"
@@ -138,7 +138,7 @@
             android:background="?android:attr/activatedBackgroundIndicator"
             android:rotation="64"
             android:scaleType="fitCenter"
-            android:src="@drawable/laser_beam"
+            android:src="@drawable/g8_laser_beam"
             android:visibility="gone" />
 
     </RelativeLayout>

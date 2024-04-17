@@ -3,6 +3,8 @@ package com.example.sehh3165_gp;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ObjectAnimator;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -13,25 +15,33 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
+
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.preference.PreferenceManager;
+
 import com.airbnb.lottie.LottieAnimationView;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Game6 extends AppCompatActivity implements View.OnTouchListener {
+public class Game6 extends AppCompatActivity implements View.OnTouchListener, View.OnClickListener {
     private int deltaX, deltaY;
     private String email;
     private ViewGroup _root;
     private ImageView dumbbell, fat_guy, slim_guy, janitor, vacuum, protein, vacuum_for_guy;
+    ImageButton home, sound, game_hint, game_reset;
     private RelativeLayout janitor_dead;
     private final List<ImageView> draggableItems = new ArrayList<>();
     private final List<ImageView> interactionTargets = new ArrayList<>();
     private Handler handler;
     private Boolean first_overlap;
     private LottieAnimationView animationView;
+
+    SharedPreferences prefs;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,6 +50,16 @@ public class Game6 extends AppCompatActivity implements View.OnTouchListener {
         initializeViews();
         configureDraggable();
         email = getIntent().getStringExtra("email");
+
+        prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        home = findViewById(R.id.imageButton_home);
+        sound = findViewById(R.id.imageButton_sound);
+        game_hint = findViewById(R.id.imageButton_hint);
+        game_reset = findViewById(R.id.imageButton_reset);
+        home.setOnClickListener(this);
+        sound.setOnClickListener(this);
+        game_hint.setOnClickListener(this);
+        game_reset.setOnClickListener(this);
     }
 
     private void initializeViews() {
@@ -174,5 +194,65 @@ public class Game6 extends AppCompatActivity implements View.OnTouchListener {
         ObjectAnimator fadeInAnimator = ObjectAnimator.ofFloat(progress_menu, "alpha", 0f, 1f);
         fadeInAnimator.setDuration(1000);
         fadeInAnimator.start();
+    }
+
+    @Override
+    public void onClick(View v) {
+        int id = v.getId();
+        if (id == R.id.imageButton_home) {
+            navigateHome();
+        } else if (id == R.id.imageButton_sound) {
+            toggleMusic();
+        } else if (id == R.id.imageButton_hint) {
+            showHint();
+        } else if (id == R.id.imageButton_reset) {
+            resetActivity();
+        }
+    }
+
+    private void navigateHome() {
+        Intent i = new Intent(Game6.this, LobbyPage.class);
+        i.putExtra("Email", email);
+        startActivity(i);
+    }
+
+    private void toggleMusic() {
+        boolean isPlaying = prefs.getBoolean("music_enabled", true);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putBoolean("music_enabled", !isPlaying);
+        editor.apply();
+
+        if (isPlaying) {
+            stopService(new Intent(this, BackgroundMusic.class));
+        } else {
+            startService(new Intent(this, BackgroundMusic.class));
+        }
+    }
+
+    private void showHint() {
+        Toast.makeText(this, "Think out of the box", Toast.LENGTH_SHORT).show();
+    }
+
+    private void resetActivity() {
+        Intent i = new Intent(this, Game6.class);
+        i.putExtra("Email", email);
+        startActivity(i);
+        finish();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        if (prefs.getBoolean("music_enabled", true)) {
+            stopService(new Intent(this, BackgroundMusic.class));
+        }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (prefs.getBoolean("music_enabled", true)) {
+            startService(new Intent(this, BackgroundMusic.class));
+        }
     }
 }

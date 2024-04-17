@@ -60,7 +60,10 @@ public class Game3 extends AppCompatActivity implements View.OnClickListener, Vi
 
         Bundle extras = getIntent().getExtras();
         email = extras != null ? extras.getString("email") : null;
-        stage = extras != null ? extras.getInt("stage") : 0;
+        DatabaseHelper dbHelper = new DatabaseHelper(getApplicationContext());
+        stage = Integer.parseInt(dbHelper.getInfo(email, 1));
+        old_time_taken = Integer.parseInt(dbHelper.getInfo(email, 2));
+        new_time_taken = (int) System.currentTimeMillis();
 
         home = findViewById(R.id.imageButton_home);
         sound = findViewById(R.id.imageButton_sound);
@@ -136,7 +139,7 @@ public class Game3 extends AppCompatActivity implements View.OnClickListener, Vi
 
     private void resetActivity() {
         Intent i = new Intent(this, Game3.class);
-        i.putExtra("Email", email);
+        i.putExtra("email", email);
         startActivity(i);
         finish();
     }
@@ -185,11 +188,6 @@ public class Game3 extends AppCompatActivity implements View.OnClickListener, Vi
                 break;
             case MotionEvent.ACTION_UP:
                 if (lastAction == MotionEvent.ACTION_MOVE) {
-                    /*
-                    if (Overlapped(v, wakeBoy)) {
-                        Toast.makeText(this, "X", Toast.LENGTH_SHORT).show();
-                    }
-                     */
                     v.performClick();
                     v.setX(buttonX);
                     v.setY(buttonY);
@@ -200,24 +198,6 @@ public class Game3 extends AppCompatActivity implements View.OnClickListener, Vi
         }
         return true;
     }
-
-    /*
-    private boolean Overlapped(View firstView, View secondView) {
-        int[] firstPosition = new int[2];
-        int[] secondPosition = new int[2];
-
-        firstView.getLocationOnScreen(firstPosition);
-        secondView.getLocationOnScreen(secondPosition);
-
-        int firstViewRight = firstPosition[0] + firstView.getWidth();
-        int firstViewBottom = firstPosition[1] + firstView.getHeight();
-        int secondViewRight = secondPosition[0] + secondView.getWidth();
-        int secondViewBottom = secondPosition[1] + secondView.getHeight();
-
-        return !(firstPosition[0] > secondViewRight || firstViewRight < secondPosition[0] ||
-                firstPosition[1] > secondViewBottom || firstViewBottom < secondPosition[1]);
-    }
-     */
 
     @Override
     public void onSensorChanged(SensorEvent event) {
@@ -270,37 +250,24 @@ public class Game3 extends AppCompatActivity implements View.OnClickListener, Vi
     private void showProgressLayout(View layout) {
         View progress_menu = layout.findViewById(R.id.progress_menu);
         TextView stage_complete_txt = layout.findViewById(R.id.stage_complete);
-        Button button_back_to_lobby = layout.findViewById(R.id.button_back_to_lobby);
         progress_menu.setVisibility(View.VISIBLE);
+        new_time_taken = (int) System.currentTimeMillis() - new_time_taken;
         stage_complete_txt.setText("Stage 3 COMPLETE!");
         Button button_continue = layout.findViewById(R.id.button_continue);
-        button_continue.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent i = new Intent(Game3.this, Game4.class);
-                i.putExtra("email", email);
-                i.putExtra("stage", stage);
-                startActivity(i);
-            }
+        Button button_back_to_lobby = layout.findViewById(R.id.button_back_to_lobby);
+        button_continue.setOnClickListener(v -> {
+            Intent i = new Intent(Game3.this, Game4.class);
+            i.putExtra("email", email);
+            startActivity(i);
         });
-        button_back_to_lobby.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent i = new Intent(Game3.this, LobbyPage.class);
-                i.putExtra("email", email);
-                i.putExtra("stage", stage);
-                startActivity(i);
-            }
+        button_back_to_lobby.setOnClickListener(v -> {
+            Intent i = new Intent(Game3.this, LobbyPage.class);
+            i.putExtra("email", email);
+            startActivity(i);
         });
         DatabaseHelper dbHelper = new DatabaseHelper(getApplicationContext());
 
-        if(stage > 3){
-            if (new_time_taken < old_time_taken){
-                dbHelper.updateStatus(email, String.valueOf(stage), String.valueOf(new_time_taken));
-            } else {
-                dbHelper.updateStatus(email, String.valueOf(stage), String.valueOf(old_time_taken));
-            }
-        } else {
+        if(stage == 2){
             if (new_time_taken < old_time_taken){
                 dbHelper.updateStatus(email, "3", String.valueOf(new_time_taken));
             } else {

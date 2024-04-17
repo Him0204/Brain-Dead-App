@@ -54,7 +54,10 @@ public class Game2 extends AppCompatActivity implements View.OnClickListener, Vi
 
         Bundle extras = getIntent().getExtras();
         email = extras != null ? extras.getString("email") : null;
-        stage = extras != null ? extras.getInt("stage") : 0;
+        DatabaseHelper dbHelper = new DatabaseHelper(getApplicationContext());
+        stage = Integer.parseInt(dbHelper.getInfo(email, 1));
+        old_time_taken = Integer.parseInt(dbHelper.getInfo(email, 2));
+        new_time_taken = (int) System.currentTimeMillis();
 
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
         home = findViewById(R.id.imageButton_home);
@@ -164,7 +167,7 @@ public class Game2 extends AppCompatActivity implements View.OnClickListener, Vi
 
     private void resetActivity() {
         Intent i = new Intent(this, Game2.class);
-        i.putExtra("Email", email);
+        i.putExtra("email", email);
         startActivity(i);
         finish();
     }
@@ -248,6 +251,7 @@ public class Game2 extends AppCompatActivity implements View.OnClickListener, Vi
         View progress_menu = layout.findViewById(R.id.progress_menu);
         TextView stage_complete_txt = layout.findViewById(R.id.stage_complete);
         button_back_to_lobby = layout.findViewById(R.id.button_back_to_lobby);
+        new_time_taken = (int) System.currentTimeMillis() - new_time_taken;
         progress_menu.setVisibility(View.VISIBLE);
         stage_complete_txt.setText("Stage 2 COMPLETE!");
         button_continue = layout.findViewById(R.id.button_continue);
@@ -256,7 +260,6 @@ public class Game2 extends AppCompatActivity implements View.OnClickListener, Vi
             public void onClick(View v) {
                 Intent i = new Intent(Game2.this, Game3.class);
                 i.putExtra("email", email);
-                i.putExtra("stage", stage);
                 startActivity(i);
             }
         });
@@ -265,22 +268,17 @@ public class Game2 extends AppCompatActivity implements View.OnClickListener, Vi
             public void onClick(View v) {
                 Intent i = new Intent(Game2.this, LobbyPage.class);
                 i.putExtra("email", email);
-                i.putExtra("stage", stage);
                 startActivity(i);
             }
         });
         DatabaseHelper dbHelper = new DatabaseHelper(getApplicationContext());
 
-        if (stage > 2) {
-            if (new_time_taken < old_time_taken) {
-                dbHelper.updateStatus(email, String.valueOf(stage), String.valueOf(new_time_taken));
+        if(stage == 1){
+            if (new_time_taken < old_time_taken){
+                dbHelper.updateStatus(email, "2", String.valueOf(new_time_taken));
             } else {
-                dbHelper.updateStatus(email, String.valueOf(stage), String.valueOf(old_time_taken));
+                dbHelper.updateStatus(email, "2", String.valueOf(old_time_taken));
             }
-        } else if (new_time_taken < old_time_taken) {
-            dbHelper.updateStatus(email, "2", String.valueOf(new_time_taken));
-        } else {
-            dbHelper.updateStatus(email, "2", String.valueOf(old_time_taken));
         }
         ObjectAnimator fadeInAnimator = ObjectAnimator.ofFloat(progress_menu, "alpha", 0f, 1f);
         fadeInAnimator.setDuration(1000);

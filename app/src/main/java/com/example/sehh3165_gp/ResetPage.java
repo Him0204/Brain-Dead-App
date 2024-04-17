@@ -61,4 +61,16 @@ public class ResetPage extends AppCompatActivity implements View.OnClickListener
             startActivity(new Intent(ResetPage.this, LoginPage.class));
         }
     }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        stopService(new Intent(this, BackgroundMusic.class));
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        startService(new Intent(this, BackgroundMusic.class));
+    }
 }

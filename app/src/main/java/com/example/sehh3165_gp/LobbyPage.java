@@ -1,10 +1,12 @@
 package com.example.sehh3165_gp;
 
-import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.TextView;
+
+import androidx.appcompat.app.AppCompatActivity;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -56,8 +58,13 @@ public class LobbyPage extends AppCompatActivity {
         buttonArray.add(button_lvl8);
 
         stage = Integer.parseInt(dbHelper.getInfo(email, 1));
+        if (stage == 0) {
+            Button button = buttonArray.get(0);
+            button.setBackgroundResource(R.drawable.lobby_button_rectangle2);
+            button.setEnabled(true);
+        }
 
-        for (int i = 0; i <= stage; i++){
+        for (int i = 0; i < stage; i++){
             Button button = buttonArray.get(i);
             button.setBackgroundResource(R.drawable.lobby_button_rectangle2);
             button.setEnabled(true);
@@ -77,47 +84,38 @@ public class LobbyPage extends AppCompatActivity {
             if (stage == 0) {
                 Intent i = new Intent(LobbyPage.this, Game1.class);
                 i.putExtra("email", email);
-                i.putExtra("stage", stage);
                 startActivity(i);
             } else if (stage == 1) {
                 Intent i = new Intent(LobbyPage.this, Game2.class);
                 i.putExtra("email", email);
-                i.putExtra("stage", stage);
                 startActivity(i);
             } else if (stage == 2) {
                 Intent i = new Intent(LobbyPage.this, Game3.class);
                 i.putExtra("email", email);
-                i.putExtra("stage", stage);
                 startActivity(i);
             } else if (stage == 3) {
                 Intent i = new Intent(LobbyPage.this, Game4.class);
                 i.putExtra("email", email);
-                i.putExtra("stage", stage);
                 startActivity(i);
             } else if (stage == 4) {
                 Intent i = new Intent(LobbyPage.this, Game5.class);
                 i.putExtra("email", email);
-                i.putExtra("stage", stage);
                 startActivity(i);
             } else if (stage == 5) {
                 Intent i = new Intent(LobbyPage.this, Game6.class);
                 i.putExtra("email", email);
-                i.putExtra("stage", stage);
                 startActivity(i);
             } else if (stage == 6) {
                 Intent i = new Intent(LobbyPage.this, Game7.class);
                 i.putExtra("email", email);
-                i.putExtra("stage", stage);
                 startActivity(i);
             } else if (stage == 7) {
                 Intent i = new Intent(LobbyPage.this, Game8.class);
                 i.putExtra("email", email);
-                i.putExtra("stage", stage);
                 startActivity(i);
             } else if (stage == 8) {
                 Intent i = new Intent(LobbyPage.this, Game8.class);
                 i.putExtra("email", email);
-                i.putExtra("stage", stage);
                 startActivity(i);
             }
         });
@@ -125,51 +123,55 @@ public class LobbyPage extends AppCompatActivity {
         button_lvl1.setOnClickListener(v -> {
             Intent i = new Intent(LobbyPage.this, Game1.class);
             i.putExtra("email", email);
-            i.putExtra("stage", stage);
             startActivity(i);
         });
         button_lvl2.setOnClickListener(v -> {
             Intent i = new Intent(LobbyPage.this, Game2.class);
             i.putExtra("email", email);
-            i.putExtra("stage", stage);
             startActivity(i);
         });
         button_lvl3.setOnClickListener(v -> {
             Intent i = new Intent(LobbyPage.this, Game3.class);
             i.putExtra("email", email);
-            i.putExtra("stage", stage);
             startActivity(i);
         });
         button_lvl4.setOnClickListener(v -> {
             Intent i = new Intent(LobbyPage.this, Game4.class);
             i.putExtra("email", email);
-            i.putExtra("stage", stage);
             startActivity(i);
         });
         button_lvl5.setOnClickListener(v -> {
             Intent i = new Intent(LobbyPage.this, Game5.class);
             i.putExtra("email", email);
-            i.putExtra("stage", stage);
             startActivity(i);
         });
         button_lvl6.setOnClickListener(v -> {
             Intent i = new Intent(LobbyPage.this, Game6.class);
             i.putExtra("email", email);
-            i.putExtra("stage", stage);
             startActivity(i);
         });
         button_lvl7.setOnClickListener(v -> {
             Intent i = new Intent(LobbyPage.this, Game7.class);
             i.putExtra("email", email);
-            i.putExtra("stage", stage);
             startActivity(i);
         });
         button_lvl8.setOnClickListener(v -> {
             Intent i = new Intent(LobbyPage.this, Game8.class);
             i.putExtra("email", email);
-            i.putExtra("stage", stage);
             startActivity(i);
         });
 
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        stopService(new Intent(this, BackgroundMusic.class));
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        startService(new Intent(this, BackgroundMusic.class));
     }
 }

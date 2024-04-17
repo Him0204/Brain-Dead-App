@@ -59,10 +59,12 @@ public class Game1 extends AppCompatActivity implements View.OnClickListener, Se
 
         Bundle extras = getIntent().getExtras();
         email = extras != null ? extras.getString("email") : null;
-        stage = extras != null ? extras.getInt("stage") : 0;
+        DatabaseHelper dbHelper = new DatabaseHelper(getApplicationContext());
+        stage = Integer.parseInt(dbHelper.getInfo(email, 1));
+        old_time_taken = Integer.parseInt(dbHelper.getInfo(email, 2));
+        new_time_taken = (int) System.currentTimeMillis();
 
         if (!won){
-            new_time_taken = (int) System.currentTimeMillis();
             prefs = PreferenceManager.getDefaultSharedPreferences(this);
             home = findViewById(R.id.imageButton_home);
             sound = findViewById(R.id.imageButton_sound);
@@ -108,7 +110,7 @@ public class Game1 extends AppCompatActivity implements View.OnClickListener, Se
             float azimuthInDegress = (float) Math.toDegrees(azimuthInRadians);
 
             // Check for 90 degree anticlockwise rotation
-            if (azimuthInDegress < -80 && azimuthInDegress > -100 && !won) {
+            if (azimuthInDegress > 80 && azimuthInDegress < 100 && !won) {
                 won = true;
                 win();
             }
@@ -134,7 +136,8 @@ public class Game1 extends AppCompatActivity implements View.OnClickListener, Se
     }
 
     private void win() {
-        imageButton_EmptyCup.setVisibility(View.INVISIBLE);
+        Drawable water = ContextCompat.getDrawable(getApplicationContext(), R.drawable.g1_full_cup);
+        imageButton_EmptyCup.setImageDrawable(water);
 
         PopupWindow popupWindow = new PopupWindow(this);
         View popupView = LayoutInflater.from(this).inflate(R.layout.progress_menu, null);
@@ -169,6 +172,7 @@ public class Game1 extends AppCompatActivity implements View.OnClickListener, Se
         TextView stage_complete_txt = layout.findViewById(R.id.stage_complete);
         Button button_back_to_lobby = layout.findViewById(R.id.button_back_to_lobby);
         progress_menu.setVisibility(View.VISIBLE);
+        new_time_taken = (int) System.currentTimeMillis() - new_time_taken;
         stage_complete_txt.setText("Stage 1 COMPLETE!");
         Button button_continue = layout.findViewById(R.id.button_continue);
         button_continue.setOnClickListener(new View.OnClickListener() {
@@ -176,7 +180,6 @@ public class Game1 extends AppCompatActivity implements View.OnClickListener, Se
             public void onClick(View v) {
                 Intent i = new Intent(Game1.this, Game2.class);
                 i.putExtra("email", email);
-                i.putExtra("stage", stage);
                 startActivity(i);
             }
         });
@@ -185,19 +188,12 @@ public class Game1 extends AppCompatActivity implements View.OnClickListener, Se
             public void onClick(View v) {
                 Intent i = new Intent(Game1.this, LobbyPage.class);
                 i.putExtra("email", email);
-                i.putExtra("stage", stage);
                 startActivity(i);
             }
         });
         DatabaseHelper dbHelper = new DatabaseHelper(getApplicationContext());
 
-        if(stage > 1){
-            if (new_time_taken < old_time_taken){
-                dbHelper.updateStatus(email, String.valueOf(stage), String.valueOf(new_time_taken));
-            } else {
-                dbHelper.updateStatus(email, String.valueOf(stage), String.valueOf(old_time_taken));
-            }
-        } else {
+        if(stage == 0){
             if (new_time_taken < old_time_taken){
                 dbHelper.updateStatus(email, "1", String.valueOf(new_time_taken));
             } else {
@@ -253,7 +249,7 @@ public class Game1 extends AppCompatActivity implements View.OnClickListener, Se
 
     private void resetActivity() {
         Intent i = new Intent(this, Game1.class);
-        i.putExtra("Email", email);
+        i.putExtra("email", email);
         startActivity(i);
         finish();
     }

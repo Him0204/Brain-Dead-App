@@ -203,7 +203,7 @@ public class Game7 extends AppCompatActivity implements View.OnClickListener {
 
     private void resetActivity() {
         Intent i = new Intent(this, Game7.class);
-        i.putExtra("Email", email);
+        i.putExtra("email", email);
         startActivity(i);
         finish();
     }
@@ -256,10 +256,10 @@ public class Game7 extends AppCompatActivity implements View.OnClickListener {
     private void showProgressLayout(View layout) {
         View progress_menu = layout.findViewById(R.id.progress_menu);
         TextView stage_complete_txt = layout.findViewById(R.id.stage_complete);
-        Button button_back_to_lobby = layout.findViewById(R.id.button_back_to_lobby);
         progress_menu.setVisibility(View.VISIBLE);
         stage_complete_txt.setText("Stage 4 COMPLETE!");
         Button button_continue = layout.findViewById(R.id.button_continue);
+        Button button_back_to_lobby = layout.findViewById(R.id.button_back_to_lobby);
         button_continue.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -280,13 +280,7 @@ public class Game7 extends AppCompatActivity implements View.OnClickListener {
         });
         DatabaseHelper dbHelper = new DatabaseHelper(getApplicationContext());
 
-        if(stage > 7){
-            if (new_time_taken < old_time_taken){
-                dbHelper.updateStatus(email, String.valueOf(stage), String.valueOf(new_time_taken));
-            } else {
-                dbHelper.updateStatus(email, String.valueOf(stage), String.valueOf(old_time_taken));
-            }
-        } else {
+        if(stage == 6){
             if (new_time_taken < old_time_taken){
                 dbHelper.updateStatus(email, "7", String.valueOf(new_time_taken));
             } else {

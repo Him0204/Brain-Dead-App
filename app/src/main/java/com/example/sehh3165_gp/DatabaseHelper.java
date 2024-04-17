@@ -71,7 +71,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             ContentValues contentValues2 = new ContentValues();
             contentValues2.put(COLUMN2_EMAIL, email);
             contentValues2.put(COLUMN2_USERNAME, username);
-            contentValues2.put(COLUMN2_STAGE, 1);
+            contentValues2.put(COLUMN2_STAGE, 0);
             contentValues2.put(COLUMN2_TIME, 0);
             result2 = DB.insert(TABLE2_NAME, null, contentValues2);
 

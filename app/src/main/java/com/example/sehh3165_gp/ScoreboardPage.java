@@ -1,6 +1,5 @@
 package com.example.sehh3165_gp;
 
-import androidx.appcompat.app.AppCompatActivity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -11,6 +10,8 @@ import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 public class ScoreboardPage extends AppCompatActivity {
 
@@ -47,6 +48,7 @@ public class ScoreboardPage extends AppCompatActivity {
         playerRankTextView.setText(getRank(player_username, allInfo));
 
         int default_time_taken_time = 0;
+        default_time_taken_time = Integer.parseInt(getTime(player_username, allInfo));
         double second = 0;
         second= (double) default_time_taken_time /1000;
         double min = 0;
@@ -65,7 +67,7 @@ public class ScoreboardPage extends AppCompatActivity {
         Button back = findViewById(R.id.button_back);
         back.setOnClickListener(v -> {
             Intent i = new Intent(ScoreboardPage.this, LobbyPage.class);
-            i.putExtra("Email", email);
+            i.putExtra("email", email);
             startActivity(i);
         });
     }
@@ -157,5 +159,17 @@ public class ScoreboardPage extends AppCompatActivity {
             }
         }
         return "-";
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        stopService(new Intent(this, BackgroundMusic.class));
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        startService(new Intent(this, BackgroundMusic.class));
     }
 }

@@ -222,13 +222,7 @@ public class Game8 extends AppCompatActivity implements View.OnTouchListener, Vi
                         progress_menu.setVisibility(View.VISIBLE);
                         DatabaseHelper dbHelper = new DatabaseHelper(getApplicationContext());
 
-                        if(stage > 8){
-                            if (new_time_taken < old_time_taken){
-                                dbHelper.updateStatus(email, String.valueOf(stage), String.valueOf(new_time_taken));
-                            } else {
-                                dbHelper.updateStatus(email, String.valueOf(stage), String.valueOf(old_time_taken));
-                            }
-                        } else {
+                        if(stage == 7 || stage == 8){
                             if (new_time_taken < old_time_taken){
                                 dbHelper.updateStatus(email, "8", String.valueOf(new_time_taken));
                             } else {
@@ -308,7 +302,7 @@ public class Game8 extends AppCompatActivity implements View.OnTouchListener, Vi
 
     private void resetActivity() {
         Intent i = new Intent(this, Game8.class);
-        i.putExtra("Email", email);
+        i.putExtra("email", email);
         startActivity(i);
         finish();
     }

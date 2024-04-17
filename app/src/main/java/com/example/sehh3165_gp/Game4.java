@@ -40,7 +40,8 @@ public class Game4 extends AppCompatActivity implements View.OnClickListener, Vi
 
     ImageButton home, sound, game_hint, game_reset;
     ImageButton networkPC, standalonePC, router;
-
+    TextView title;
+    DatabaseHelper dbHelper = new DatabaseHelper(getApplicationContext());
     SharedPreferences prefs;
     String email;
     int stage;
@@ -57,15 +58,17 @@ public class Game4 extends AppCompatActivity implements View.OnClickListener, Vi
         super.onCreate(savedInstanceState);
         setContentView(R.layout.game4_computer);
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
-
         Bundle extras = getIntent().getExtras();
         email = extras != null ? extras.getString("email") : null;
-        stage = extras != null ? extras.getInt("stage") : 0;
+        stage = Integer.parseInt(dbHelper.getInfo(email, 1));
+        old_time_taken = Integer.parseInt(dbHelper.getInfo(email, 2));
+        new_time_taken = (int) System.currentTimeMillis();
 
         home = findViewById(R.id.imageButton_home);
         sound = findViewById(R.id.imageButton_sound);
         game_hint = findViewById(R.id.imageButton_hint);
         game_reset = findViewById(R.id.imageButton_reset);
+        title = findViewById(R.id.textView_computer);
         home.setOnClickListener(this);
         sound.setOnClickListener(this);
         game_hint.setOnClickListener(this);
@@ -83,13 +86,21 @@ public class Game4 extends AppCompatActivity implements View.OnClickListener, Vi
 
         networkPC = findViewById(R.id.imageButton_computer);
         standalonePC = findViewById(R.id.imageButton_no_wifi_computer);
+        router = findViewById(R.id.imageButton_router);
+        router.setOnTouchListener(this);
 
         connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         initialNetworkState = isInternetAvailable();
         updateNetworkState(initialNetworkState);
+        if (initialNetworkState) {
+            title.setText("4. Disconnect the WiFi");
+            router.setVisibility(View.VISIBLE);
+        }
+        else {
+            title.setText("4. Connect to the WiFi");
+            router.setVisibility(View.INVISIBLE);
+        }
 
-        router = findViewById(R.id.imageButton_router);
-        router.setOnTouchListener(this);
         setupNetworkCallback();
     }
 
@@ -137,7 +148,7 @@ public class Game4 extends AppCompatActivity implements View.OnClickListener, Vi
 
     private void resetActivity() {
         Intent i = new Intent(this, Game4.class);
-        i.putExtra("Email", email);
+        i.putExtra("email", email);
         startActivity(i);
         finish();
     }
@@ -264,6 +275,12 @@ public class Game4 extends AppCompatActivity implements View.OnClickListener, Vi
     }
 
     private void win() {
+        if (initialNetworkState) {
+            router.setVisibility(View.INVISIBLE);
+        }
+        else {
+            router.setVisibility(View.VISIBLE);
+        }
         PopupWindow popupWindow = new PopupWindow(this);
         View popupView = LayoutInflater.from(this).inflate(R.layout.progress_menu, null);
         popupWindow.setBackgroundDrawable(new ColorDrawable(0xCC000000));
@@ -297,6 +314,7 @@ public class Game4 extends AppCompatActivity implements View.OnClickListener, Vi
         TextView stage_complete_txt = layout.findViewById(R.id.stage_complete);
         Button button_back_to_lobby = layout.findViewById(R.id.button_back_to_lobby);
         progress_menu.setVisibility(View.VISIBLE);
+        new_time_taken = (int) System.currentTimeMillis() - new_time_taken;
         stage_complete_txt.setText("Stage 4 COMPLETE!");
         Button button_continue = layout.findViewById(R.id.button_continue);
         button_continue.setOnClickListener(new View.OnClickListener() {
@@ -304,7 +322,6 @@ public class Game4 extends AppCompatActivity implements View.OnClickListener, Vi
             public void onClick(View v) {
                 Intent i = new Intent(Game4.this, Game5.class);
                 i.putExtra("email", email);
-                i.putExtra("stage", stage);
                 startActivity(i);
             }
         });
@@ -313,19 +330,11 @@ public class Game4 extends AppCompatActivity implements View.OnClickListener, Vi
             public void onClick(View v) {
                 Intent i = new Intent(Game4.this, LobbyPage.class);
                 i.putExtra("email", email);
-                i.putExtra("stage", stage);
                 startActivity(i);
             }
         });
-        DatabaseHelper dbHelper = new DatabaseHelper(getApplicationContext());
 
-        if(stage > 4){
-            if (new_time_taken < old_time_taken){
-                dbHelper.updateStatus(email, String.valueOf(stage), String.valueOf(new_time_taken));
-            } else {
-                dbHelper.updateStatus(email, String.valueOf(stage), String.valueOf(old_time_taken));
-            }
-        } else {
+        if(stage == 3){
             if (new_time_taken < old_time_taken){
                 dbHelper.updateStatus(email, "4", String.valueOf(new_time_taken));
             } else {

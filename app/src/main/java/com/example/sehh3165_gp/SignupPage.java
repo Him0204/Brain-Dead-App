@@ -63,4 +63,17 @@ public class SignupPage extends AppCompatActivity implements View.OnClickListene
             startActivity(new Intent(SignupPage.this, LoginPage.class));
         }
     }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        stopService(new Intent(this, BackgroundMusic.class));
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        startService(new Intent(this, BackgroundMusic.class));
+    }
+
 }

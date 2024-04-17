@@ -22,6 +22,54 @@
         android:textSize="24sp"
         android:textStyle="bold" />
 
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/imageView_house"
+        android:elevation="1dp">
+
+        <ImageButton
+            android:id="@+id/imageButton_roof"
+            android:layout_width="168dp"
+            android:layout_height="70dp"
+            android:layout_marginStart="200dp"
+            android:layout_marginTop="50dp"
+            android:background="?android:attr/activatedBackgroundIndicator"
+            android:scaleType="fitCenter"
+            android:src="@drawable/g5_piece" />
+
+        <ImageButton
+            android:id="@+id/imageButton_garage"
+            android:layout_width="150dp"
+            android:layout_height="70dp"
+            android:layout_marginStart="182dp"
+            android:layout_marginTop="240dp"
+            android:background="?android:attr/activatedBackgroundIndicator"
+            android:scaleType="fitCenter"
+            android:src="@drawable/g5_piece2" />
+
+        <ImageButton
+            android:id="@+id/imageButton_body"
+            android:layout_width="100dp"
+            android:layout_height="70dp"
+            android:layout_marginStart="80dp"
+            android:layout_marginTop="150dp"
+            android:background="?android:attr/activatedBackgroundIndicator"
+            android:scaleType="fitCenter"
+            android:src="@drawable/g5_piece3" />
+
+        <ImageButton
+            android:id="@+id/imageButton_glue"
+            android:layout_width="40dp"
+            android:layout_height="65dp"
+            android:layout_marginStart="40dp"
+            android:layout_marginTop="20dp"
+            android:background="?android:attr/activatedBackgroundIndicator"
+            android:scaleType="fitCenter"
+            android:src="@drawable/g5_glue" />
+
+    </RelativeLayout>
+
     <ImageView
         android:id="@+id/imageView_house"
         android:layout_width="wrap_content"
@@ -56,53 +104,5 @@
         android:scaleType="fitCenter"
         android:visibility="gone"
         android:src="@drawable/g5_glue" />
-
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/imageView_house"
-        android:elevation="1dp">
-
-        <ImageButton
-            android:id="@+id/imageButton_roof"
-            android:layout_width="168dp"
-            android:layout_height="70dp"
-            android:layout_marginTop="50dp"
-            android:layout_marginStart="200dp"
-            android:background="?android:attr/activatedBackgroundIndicator"
-            android:scaleType="fitCenter"
-            android:src="@drawable/g5_piece" />
-
-        <ImageButton
-            android:id="@+id/imageButton_garage"
-            android:layout_width="150dp"
-            android:layout_height="70dp"
-            android:layout_marginStart="182dp"
-            android:layout_marginTop="240dp"
-            android:background="?android:attr/activatedBackgroundIndicator"
-            android:scaleType="fitCenter"
-            android:src="@drawable/g5_piece2" />
-
-        <ImageButton
-            android:id="@+id/imageButton_body"
-            android:layout_width="100dp"
-            android:layout_height="70dp"
-            android:layout_marginTop="150dp"
-            android:layout_marginStart="80dp"
-            android:background="?android:attr/activatedBackgroundIndicator"
-            android:scaleType="fitCenter"
-            android:src="@drawable/g5_piece3" />
-
-        <ImageButton
-            android:id="@+id/imageButton_glue"
-            android:layout_width="40dp"
-            android:layout_height="65dp"
-            android:layout_marginTop="20dp"
-            android:layout_marginStart="40dp"
-            android:background="?android:attr/activatedBackgroundIndicator"
-            android:scaleType="fitCenter"
-            android:src="@drawable/g5_glue" />
-
-    </RelativeLayout>
 
 </RelativeLayout>

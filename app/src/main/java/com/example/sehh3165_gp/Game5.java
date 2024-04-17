@@ -78,6 +78,9 @@ public class Game5 extends Activity implements View.OnTouchListener, View.OnClic
         game_hint.setOnClickListener(this);
         game_reset.setOnClickListener(this);
 
+        button_back_to_lobby = findViewById(R.id.button_back_to_lobby);
+        button_continue = findViewById(R.id.button_continue);
+
         Drawable speaker = ContextCompat.getDrawable(getApplicationContext(), R.drawable.setting_speaker);
         Drawable muted = ContextCompat.getDrawable(getApplicationContext(), R.drawable.setting_mute);
 
@@ -144,7 +147,7 @@ public class Game5 extends Activity implements View.OnTouchListener, View.OnClic
 
     private void resetActivity() {
         Intent i = new Intent(this, Game5.class);
-        i.putExtra("Email", email);
+        i.putExtra("email", email);
         startActivity(i);
         finish();
     }
@@ -233,13 +236,7 @@ public class Game5 extends Activity implements View.OnTouchListener, View.OnClic
                                             progress_menu.setVisibility(View.VISIBLE);
                                             DatabaseHelper dbHelper = new DatabaseHelper(getApplicationContext());
 
-                                            if(stage > 5){
-                                                if (new_time_taken < old_time_taken){
-                                                    dbHelper.updateStatus(email, String.valueOf(stage), String.valueOf(new_time_taken));
-                                                } else {
-                                                    dbHelper.updateStatus(email, String.valueOf(stage), String.valueOf(old_time_taken));
-                                                }
-                                            } else {
+                                            if(stage == 4){
                                                 if (new_time_taken < old_time_taken){
                                                     dbHelper.updateStatus(email, "5", String.valueOf(new_time_taken));
                                                 } else {
@@ -247,12 +244,12 @@ public class Game5 extends Activity implements View.OnTouchListener, View.OnClic
                                                 }
                                             }
 
-                                            button_continue.setOnClickListener(v12 -> {
+                                            button_continue.setOnClickListener(v -> {
                                                 Intent i = new Intent(Game5.this, Game6.class);
                                                 i.putExtra("email", email);
                                                 startActivity(i);
                                             });
-                                            button_back_to_lobby.setOnClickListener(v1 -> {
+                                            button_back_to_lobby.setOnClickListener(v -> {
                                                 Intent i = new Intent(Game5.this, LobbyPage.class);
                                                 i.putExtra("email", email);
                                                 startActivity(i);

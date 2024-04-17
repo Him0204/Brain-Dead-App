@@ -32,18 +32,6 @@
         android:src="@drawable/g4_computer" />
 
     <ImageButton
-        android:id="@+id/imageButton_no_wifi_computer"
-        android:layout_width="300dp"
-        android:layout_height="250dp"
-        android:layout_centerInParent="true"
-        android:layout_centerVertical="true"
-        android:background="?android:attr/activatedBackgroundIndicator"
-        android:focusable="false"
-        android:scaleType="fitCenter"
-        android:src="@drawable/g4_computer"
-        android:visibility="invisible" />
-
-    <ImageButton
         android:id="@+id/imageButton_router"
         android:layout_width="100dp"
         android:layout_height="100dp"

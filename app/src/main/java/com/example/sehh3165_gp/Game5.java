@@ -47,16 +47,19 @@ public class Game5 extends Activity implements View.OnTouchListener, View.OnClic
 
     SharedPreferences prefs;
     String email;
-    int time_taken;
+    int stage;
+    int old_time_taken;
+    int new_time_taken;
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.game5_house);
-        time_taken = 0; //delete this when synced!
 
         Bundle extras = getIntent().getExtras();
         email = extras != null ? extras.getString("email") : null;
+        stage = extras != null ? extras.getInt("stage") : 0;
 
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
         _root = findViewById(R.id.relative_layout);
@@ -80,9 +83,9 @@ public class Game5 extends Activity implements View.OnTouchListener, View.OnClic
 
         boolean isPlaying = prefs.getBoolean("music_enabled", true);
         if (isPlaying) {
-            sound.setImageDrawable(muted);
-        } else {
             sound.setImageDrawable(speaker);
+        } else {
+            sound.setImageDrawable(muted);
         }
 
         buttonArray.add(glue);
@@ -112,7 +115,7 @@ public class Game5 extends Activity implements View.OnTouchListener, View.OnClic
 
     private void navigateHome() {
         Intent i = new Intent(Game5.this, LobbyPage.class);
-        i.putExtra("Email", email);
+        i.putExtra("email", email);
         startActivity(i);
     }
 
@@ -229,7 +232,21 @@ public class Game5 extends Activity implements View.OnTouchListener, View.OnClic
                                             progress_menu = newLayout.findViewById(R.id.progress_menu);
                                             progress_menu.setVisibility(View.VISIBLE);
                                             DatabaseHelper dbHelper = new DatabaseHelper(getApplicationContext());
-                                            dbHelper.updateStatus(email, "5", String.valueOf(time_taken));
+
+                                            if(stage > 5){
+                                                if (new_time_taken < old_time_taken){
+                                                    dbHelper.updateStatus(email, String.valueOf(stage), String.valueOf(new_time_taken));
+                                                } else {
+                                                    dbHelper.updateStatus(email, String.valueOf(stage), String.valueOf(old_time_taken));
+                                                }
+                                            } else {
+                                                if (new_time_taken < old_time_taken){
+                                                    dbHelper.updateStatus(email, "5", String.valueOf(new_time_taken));
+                                                } else {
+                                                    dbHelper.updateStatus(email, "5", String.valueOf(old_time_taken));
+                                                }
+                                            }
+
                                             button_continue.setOnClickListener(v12 -> {
                                                 Intent i = new Intent(Game5.this, Game6.class);
                                                 i.putExtra("email", email);

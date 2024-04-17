@@ -59,6 +59,18 @@
             android:textSize="16sp" />
 
         <TextView
+            android:id="@+id/time_taken"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/player_name"
+            android:text="Time Taken: "
+            android:layout_toRightOf="@id/stage"
+            android:layout_alignBottom="@id/stage"
+            android:layout_marginLeft="30dp"
+            android:textColor="#808080"
+            android:textSize="16sp" />
+
+        <TextView
             android:id="@+id/rank"
             android:layout_width="46dp"
             android:layout_height="46dp"

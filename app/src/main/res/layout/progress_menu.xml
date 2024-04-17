@@ -24,7 +24,7 @@
         android:id="@+id/progress_menu">
 
         <TextView
-            android:id="@+id/stage5_complete"
+            android:id="@+id/stage_complete"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="@color/white"
@@ -34,13 +34,13 @@
             android:shadowColor="@color/white"
             android:shadowDy="5"
             android:shadowDx="5"
-            android:text="Stage 5 COMPLETE!"/>
+            android:text=""/>
 
         <Button
             android:id="@+id/button_continue"
             android:layout_width="250dp"
             android:layout_height="wrap_content"
-            android:layout_below="@id/stage5_complete"
+            android:layout_below="@id/stage_complete"
             android:layout_marginTop="70dp"
             android:layout_centerHorizontal="true"
             android:background="@drawable/lobby_button_rectangle"

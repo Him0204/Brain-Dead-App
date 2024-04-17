@@ -15,6 +15,7 @@
             android:layout_marginTop="10dp"
             android:text="Username"
             android:textSize="18sp"
+            android:scrollbars="vertical"
             android:textColor="@color/black" />
 
         <TextView
@@ -24,6 +25,18 @@
             android:layout_marginStart="10dp"
             android:layout_marginBottom="10dp"
             android:text="Stage: "
+            android:textSize="14sp"
+            android:textColor="#808080"
+            android:layout_below="@id/Username" />
+
+        <TextView
+            android:id="@+id/Time_taken"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Time Taken: "
+            android:layout_toRightOf="@id/Stage"
+            android:layout_alignBottom="@id/Stage"
+            android:layout_marginLeft="30dp"
             android:textSize="14sp"
             android:textColor="#808080"
             android:layout_below="@id/Username" />

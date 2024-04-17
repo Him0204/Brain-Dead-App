@@ -1,19 +1,33 @@
 package com.example.sehh3165_gp;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.media.AudioManager;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.view.Gravity;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.PopupWindow;
+import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.preference.PreferenceManager;
+
+import com.airbnb.lottie.LottieAnimationView;
 
 public class Game2 extends AppCompatActivity implements View.OnClickListener, View.OnTouchListener {
 
@@ -25,6 +39,13 @@ public class Game2 extends AppCompatActivity implements View.OnClickListener, Vi
 
     SharedPreferences prefs;
     String email;
+    int stage;
+    int old_time_taken;
+    int new_time_taken;
+    private LottieAnimationView animationView;
+    private Handler handler;
+    Button button_continue, button_back_to_lobby;
+    boolean won = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,7 +53,8 @@ public class Game2 extends AppCompatActivity implements View.OnClickListener, Vi
         setContentView(R.layout.game2_baby);
 
         Bundle extras = getIntent().getExtras();
-        email = extras != null ? extras.getString("Email") : null;
+        email = extras != null ? extras.getString("email") : null;
+        stage = extras != null ? extras.getInt("stage") : 0;
 
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
         home = findViewById(R.id.imageButton_home);
@@ -49,9 +71,9 @@ public class Game2 extends AppCompatActivity implements View.OnClickListener, Vi
 
         boolean isPlaying = prefs.getBoolean("music_enabled", true);
         if (isPlaying) {
-            sound.setImageDrawable(muted);
-        } else {
             sound.setImageDrawable(speaker);
+        } else {
+            sound.setImageDrawable(muted);
         }
 
         cryingBaby = findViewById(R.id.imageButton_crying_baby);
@@ -82,9 +104,11 @@ public class Game2 extends AppCompatActivity implements View.OnClickListener, Vi
                 break;
             case MotionEvent.ACTION_UP:
                 if (lastAction == MotionEvent.ACTION_MOVE) {
+                    /*
                     if (Overlapped(v, cryingBaby)) {
                         Toast.makeText(this, "X", Toast.LENGTH_SHORT).show();
                     }
+                     */
                     v.performClick();
                     v.setX(buttonX);
                     v.setY(buttonY);
@@ -112,7 +136,7 @@ public class Game2 extends AppCompatActivity implements View.OnClickListener, Vi
 
     private void navigateHome() {
         Intent i = new Intent(Game2.this, LobbyPage.class);
-        i.putExtra("Email", email);
+        i.putExtra("email", email);
         startActivity(i);
     }
 
@@ -161,7 +185,7 @@ public class Game2 extends AppCompatActivity implements View.OnClickListener, Vi
         }
     }
 
-
+    /*
     private boolean Overlapped(View firstView, View secondView) {
         int[] firstPosition = new int[2];
         int[] secondPosition = new int[2];
@@ -174,11 +198,14 @@ public class Game2 extends AppCompatActivity implements View.OnClickListener, Vi
         return !(firstPosition[0] > secondViewRight || firstViewRight < secondPosition[0] ||
                 firstPosition[1] > secondViewBottom || firstViewBottom < secondPosition[1]);
     }
+     */
+
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         AudioManager audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
         boolean isMusicMute = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC) == 0;
-        if (keyCode == KeyEvent.KEYCODE_VOLUME_DOWN && isMusicMute) {
+        if (keyCode == KeyEvent.KEYCODE_VOLUME_DOWN && isMusicMute && !won) {
+            won = true;
             win();
             return super.onKeyDown(keyCode, event);
         }
@@ -186,9 +213,80 @@ public class Game2 extends AppCompatActivity implements View.OnClickListener, Vi
     }
 
     private void win() {
-        Toast.makeText(this,  "v", Toast.LENGTH_SHORT).show();
         cryingBaby.setVisibility(View.INVISIBLE);
         smilingBaby.setVisibility(View.VISIBLE);
+
+        PopupWindow popupWindow = new PopupWindow(this);
+        View popupView = LayoutInflater.from(this).inflate(R.layout.progress_menu, null);
+        popupWindow.setBackgroundDrawable(new ColorDrawable(0xCC000000));
+        popupWindow.setContentView(popupView);
+        popupWindow.setWidth(ViewGroup.LayoutParams.MATCH_PARENT);
+        popupWindow.setHeight(ViewGroup.LayoutParams.MATCH_PARENT);
+        popupWindow.setFocusable(true);
+        popupWindow.showAtLocation(findViewById(android.R.id.content), Gravity.CENTER, 0, 0);
+        setUpPopupAnimations(popupView);
+    }
+
+    private void setUpPopupAnimations(View layout) {
+        animationView = layout.findViewById(R.id.animation_view);
+        animationView.addAnimatorListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                fadeOutAnimationViewAndShowProgress(layout);
+            }
+        });
+    }
+
+    private void fadeOutAnimationViewAndShowProgress(View layout) {
+        animationView.animate().alpha(0f).withEndAction(() -> {
+            handler = new Handler(Looper.getMainLooper());
+            handler.postDelayed(() -> showProgressLayout(layout), 300);
+        }).start();
+    }
+
+    private void showProgressLayout(View layout) {
+        View progress_menu = layout.findViewById(R.id.progress_menu);
+        TextView stage_complete_txt = layout.findViewById(R.id.stage_complete);
+        button_back_to_lobby = layout.findViewById(R.id.button_back_to_lobby);
+        progress_menu.setVisibility(View.VISIBLE);
+        stage_complete_txt.setText("Stage 2 COMPLETE!");
+        button_continue = layout.findViewById(R.id.button_continue);
+        button_continue.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(Game2.this, Game3.class);
+                i.putExtra("email", email);
+                i.putExtra("stage", stage);
+                startActivity(i);
+            }
+        });
+        button_back_to_lobby.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(Game2.this, LobbyPage.class);
+                i.putExtra("email", email);
+                i.putExtra("stage", stage);
+                startActivity(i);
+            }
+        });
+        DatabaseHelper dbHelper = new DatabaseHelper(getApplicationContext());
+
+        if(stage > 2){
+            if (new_time_taken < old_time_taken){
+                dbHelper.updateStatus(email, String.valueOf(stage), String.valueOf(new_time_taken));
+            } else {
+                dbHelper.updateStatus(email, String.valueOf(stage), String.valueOf(old_time_taken));
+            }
+        } else {
+            if (new_time_taken < old_time_taken){
+                dbHelper.updateStatus(email, "2", String.valueOf(new_time_taken));
+            } else {
+                dbHelper.updateStatus(email, "2", String.valueOf(old_time_taken));
+            }
+        }
+        ObjectAnimator fadeInAnimator = ObjectAnimator.ofFloat(progress_menu, "alpha", 0f, 1f);
+        fadeInAnimator.setDuration(1000);
+        fadeInAnimator.start();
     }
 
 }

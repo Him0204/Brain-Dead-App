@@ -16,6 +16,7 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.PopupWindow;
@@ -36,6 +37,7 @@ public class Game6 extends AppCompatActivity implements View.OnTouchListener, Vi
     private ViewGroup _root;
     private ImageView dumbbell, fat_guy, slim_guy, janitor, vacuum, protein, vacuum_for_guy;
     ImageButton home, sound, game_hint, game_reset;
+    Button button_continue, button_back_to_lobby;
     private RelativeLayout janitor_dead;
     private final List<ImageView> draggableItems = new ArrayList<>();
     private final List<ImageView> interactionTargets = new ArrayList<>();
@@ -45,6 +47,9 @@ public class Game6 extends AppCompatActivity implements View.OnTouchListener, Vi
 
     SharedPreferences prefs;
     String email;
+    int stage;
+    int old_time_taken;
+    int new_time_taken;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,7 +60,8 @@ public class Game6 extends AppCompatActivity implements View.OnTouchListener, Vi
         configureDraggable();
 
         Bundle extras = getIntent().getExtras();
-        email = extras != null ? extras.getString("Email") : null;
+        email = extras != null ? extras.getString("email") : null;
+        stage = extras != null ? extras.getInt("stage") : 0;
 
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
         home = findViewById(R.id.imageButton_home);
@@ -72,9 +78,9 @@ public class Game6 extends AppCompatActivity implements View.OnTouchListener, Vi
 
         boolean isPlaying = prefs.getBoolean("music_enabled", true);
         if (isPlaying) {
-            sound.setImageDrawable(muted);
-        } else {
             sound.setImageDrawable(speaker);
+        } else {
+            sound.setImageDrawable(muted);
         }
     }
 
@@ -210,8 +216,30 @@ public class Game6 extends AppCompatActivity implements View.OnTouchListener, Vi
         View progress_menu = layout.findViewById(R.id.progress_menu);
         progress_menu.setVisibility(View.VISIBLE);
         DatabaseHelper dbHelper = new DatabaseHelper(getApplicationContext());
-        int time_taken = 0;
-        dbHelper.updateStatus(email, "5", String.valueOf(time_taken));
+
+        if(stage > 6){
+            if (new_time_taken < old_time_taken){
+                dbHelper.updateStatus(email, String.valueOf(stage), String.valueOf(new_time_taken));
+            } else {
+                dbHelper.updateStatus(email, String.valueOf(stage), String.valueOf(old_time_taken));
+            }
+        } else {
+            if (new_time_taken < old_time_taken){
+                dbHelper.updateStatus(email, "6", String.valueOf(new_time_taken));
+            } else {
+                dbHelper.updateStatus(email, "6", String.valueOf(old_time_taken));
+            }
+        }
+        button_continue.setOnClickListener(v12 -> {
+            Intent i = new Intent(Game6.this, Game7.class);
+            i.putExtra("email", email);
+            startActivity(i);
+        });
+        button_back_to_lobby.setOnClickListener(v1 -> {
+            Intent i = new Intent(Game6.this, LobbyPage.class);
+            i.putExtra("email", email);
+            startActivity(i);
+        });
         ObjectAnimator fadeInAnimator = ObjectAnimator.ofFloat(progress_menu, "alpha", 0f, 1f);
         fadeInAnimator.setDuration(1000);
         fadeInAnimator.start();
@@ -233,7 +261,7 @@ public class Game6 extends AppCompatActivity implements View.OnTouchListener, Vi
 
     private void navigateHome() {
         Intent i = new Intent(Game6.this, LobbyPage.class);
-        i.putExtra("Email", email);
+        i.putExtra("email", email);
         startActivity(i);
     }
 

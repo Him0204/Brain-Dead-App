@@ -34,11 +34,21 @@ public class LoginPage extends AppCompatActivity implements View.OnClickListener
         DB.inputData("Test5", "abc", "Test5");
         DB.inputData("Test2", "abc", "Test2");
         DB.inputData("Test4", "abc", "Test4");
-        DB.updateStatus("Test1", "1","253");
-        DB.updateStatus("Test5", "6","572");
-        DB.updateStatus("Test3", "4","447");
-        DB.updateStatus("Test2", "4","273");
-        DB.updateStatus("Test4", "8","495");
+        DB.inputData("Test6", "abc", "Test6");
+        DB.inputData("Test7", "abc", "Test7");
+        DB.inputData("Test8", "abc", "Test8");
+        DB.inputData("Test9", "abc", "Test9");
+        DB.inputData("Test10", "abc", "Test10");
+        DB.updateStatus("Test10", "8","50000");
+        DB.updateStatus("Test9", "7","122000");
+        DB.updateStatus("Test8", "7","123000");
+        DB.updateStatus("Test7", "2","252000");
+        DB.updateStatus("Test6", "2","253000");
+        DB.updateStatus("Test1", "0","0");
+        DB.updateStatus("Test5", "6","572000");
+        DB.updateStatus("Test3", "4","447000");
+        DB.updateStatus("Test2", "4","273000");
+        DB.updateStatus("Test4", "8","9495000");
     }
 
     private boolean validate(String email, String passwd) {
@@ -53,7 +63,7 @@ public class LoginPage extends AppCompatActivity implements View.OnClickListener
                 Toast.makeText(LoginPage.this, "Please fill in email/password", Toast.LENGTH_SHORT).show();
             else if (validate(email.getText().toString(), passwd.getText().toString())) {
                 Intent i = new Intent(LoginPage.this, LobbyPage.class);
-                i.putExtra("Email", email.getText().toString());
+                i.putExtra("email", email.getText().toString());
                 email.setText("");
                 passwd.setText("");
                 startActivity(i);

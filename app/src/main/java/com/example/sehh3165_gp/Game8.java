@@ -38,6 +38,7 @@ public class Game8 extends AppCompatActivity implements View.OnTouchListener, Vi
     private int deltaX, deltaY;
     private float buttonX, buttonY;
     private String email;
+    private int stage;
     private ViewGroup _root;
     private MediaPlayer bgm, bgm_laser;
     private final Handler handler = new Handler(Looper.getMainLooper());
@@ -56,7 +57,8 @@ public class Game8 extends AppCompatActivity implements View.OnTouchListener, Vi
     private Button button_continue;
 
     SharedPreferences prefs;
-    private final int time_taken = 0;
+    int old_time_taken;
+    int new_time_taken;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,6 +68,7 @@ public class Game8 extends AppCompatActivity implements View.OnTouchListener, Vi
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
         Bundle extras = getIntent().getExtras();
         email = extras != null ? extras.getString("email") : null;
+        stage = extras != null ? extras.getInt("stage") : 0;
 
         _root = findViewById(R.id.relative_layout);
 
@@ -87,9 +90,9 @@ public class Game8 extends AppCompatActivity implements View.OnTouchListener, Vi
 
         boolean isPlaying = prefs.getBoolean("music_enabled", true);
         if (isPlaying) {
-            sound.setImageDrawable(muted);
-        } else {
             sound.setImageDrawable(speaker);
+        } else {
+            sound.setImageDrawable(muted);
         }
 
         sun = findViewById(R.id.sun);
@@ -218,7 +221,20 @@ public class Game8 extends AppCompatActivity implements View.OnTouchListener, Vi
                         progress_menu = newLayout.findViewById(R.id.progress_menu);
                         progress_menu.setVisibility(View.VISIBLE);
                         DatabaseHelper dbHelper = new DatabaseHelper(getApplicationContext());
-                        dbHelper.updateStatus(email, "8", String.valueOf(time_taken));
+
+                        if(stage > 8){
+                            if (new_time_taken < old_time_taken){
+                                dbHelper.updateStatus(email, String.valueOf(stage), String.valueOf(new_time_taken));
+                            } else {
+                                dbHelper.updateStatus(email, String.valueOf(stage), String.valueOf(old_time_taken));
+                            }
+                        } else {
+                            if (new_time_taken < old_time_taken){
+                                dbHelper.updateStatus(email, "8", String.valueOf(new_time_taken));
+                            } else {
+                                dbHelper.updateStatus(email, "8", String.valueOf(old_time_taken));
+                            }
+                        }
                         button_continue = newLayout.findViewById(R.id.button_continue);
                         button_continue.setOnClickListener(v1 -> {
                             Intent i = new Intent(Game8.this, LobbyPage.class);
@@ -264,7 +280,7 @@ public class Game8 extends AppCompatActivity implements View.OnTouchListener, Vi
 
     private void navigateHome() {
         Intent i = new Intent(Game8.this, LobbyPage.class);
-        i.putExtra("Email", email);
+        i.putExtra("email", email);
         startActivity(i);
     }
 

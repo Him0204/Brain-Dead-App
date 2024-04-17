@@ -1,20 +1,34 @@
 package com.example.sehh3165_gp;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.PopupWindow;
+import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.preference.PreferenceManager;
+
+import com.airbnb.lottie.LottieAnimationView;
 
 public class Game1 extends AppCompatActivity implements View.OnClickListener, SensorEventListener {
 
@@ -31,6 +45,12 @@ public class Game1 extends AppCompatActivity implements View.OnClickListener, Se
 
     SharedPreferences prefs;
     String email;
+    int stage;
+    int old_time_taken;
+    int new_time_taken;
+    private LottieAnimationView animationView;
+    private Handler handler;
+    boolean won = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,40 +58,44 @@ public class Game1 extends AppCompatActivity implements View.OnClickListener, Se
         setContentView(R.layout.game1_cup);
 
         Bundle extras = getIntent().getExtras();
-        email = extras != null ? extras.getString("Email") : null;
+        email = extras != null ? extras.getString("email") : null;
+        stage = extras != null ? extras.getInt("stage") : 0;
 
-        prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        home = findViewById(R.id.imageButton_home);
-        sound = findViewById(R.id.imageButton_sound);
-        game_hint = findViewById(R.id.imageButton_hint);
-        game_reset = findViewById(R.id.imageButton_reset);
-        home.setOnClickListener(this);
-        sound.setOnClickListener(this);
-        game_hint.setOnClickListener(this);
-        game_reset.setOnClickListener(this);
+        if (!won){
+            new_time_taken = (int) System.currentTimeMillis();
+            prefs = PreferenceManager.getDefaultSharedPreferences(this);
+            home = findViewById(R.id.imageButton_home);
+            sound = findViewById(R.id.imageButton_sound);
+            game_hint = findViewById(R.id.imageButton_hint);
+            game_reset = findViewById(R.id.imageButton_reset);
+            home.setOnClickListener(this);
+            sound.setOnClickListener(this);
+            game_hint.setOnClickListener(this);
+            game_reset.setOnClickListener(this);
 
-        Drawable speaker = ContextCompat.getDrawable(getApplicationContext(), R.drawable.setting_speaker);
-        Drawable muted = ContextCompat.getDrawable(getApplicationContext(), R.drawable.setting_mute);
+            Drawable speaker = ContextCompat.getDrawable(getApplicationContext(), R.drawable.setting_speaker);
+            Drawable muted = ContextCompat.getDrawable(getApplicationContext(), R.drawable.setting_mute);
 
-        boolean isPlaying = prefs.getBoolean("music_enabled", true);
-        if (isPlaying) {
-            sound.setImageDrawable(muted);
-        } else {
-            sound.setImageDrawable(speaker);
-        }
+            boolean isPlaying = prefs.getBoolean("music_enabled", true);
+            if (isPlaying) {
+                sound.setImageDrawable(speaker);
+            } else {
+                sound.setImageDrawable(muted);
+            }
 
-        imageButton_EmptyCup = findViewById(R.id.imageButton_EmptyCup);
-        sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
-        orientationSensor = sensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR);
-        if (orientationSensor != null) {
-            sensorManager.registerListener(this, orientationSensor, SensorManager.SENSOR_DELAY_NORMAL);
-        } else {
-            Toast.makeText(this, "Rotation vector sensor not available; defaulting to accelerometer + magnetometer", Toast.LENGTH_LONG).show();
-            // Fallback if rotation vector sensor is not available
-            Sensor accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
-            Sensor magnetometer = sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
-            sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_NORMAL);
-            sensorManager.registerListener(this, magnetometer, SensorManager.SENSOR_DELAY_NORMAL);
+            imageButton_EmptyCup = findViewById(R.id.imageButton_EmptyCup);
+            sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+            orientationSensor = sensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR);
+            if (orientationSensor != null) {
+                sensorManager.registerListener(this, orientationSensor, SensorManager.SENSOR_DELAY_NORMAL);
+            } else {
+                Toast.makeText(this, "Rotation vector sensor not available; defaulting to accelerometer + magnetometer", Toast.LENGTH_LONG).show();
+                // Fallback if rotation vector sensor is not available
+                Sensor accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+                Sensor magnetometer = sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
+                sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_NORMAL);
+                sensorManager.registerListener(this, magnetometer, SensorManager.SENSOR_DELAY_NORMAL);
+            }
         }
     }
 
@@ -84,7 +108,8 @@ public class Game1 extends AppCompatActivity implements View.OnClickListener, Se
             float azimuthInDegress = (float) Math.toDegrees(azimuthInRadians);
 
             // Check for 90 degree anticlockwise rotation
-            if (azimuthInDegress < -80 && azimuthInDegress > -100) {
+            if (azimuthInDegress < -80 && azimuthInDegress > -100 && !won) {
+                won = true;
                 win();
             }
         } else {
@@ -110,7 +135,78 @@ public class Game1 extends AppCompatActivity implements View.OnClickListener, Se
 
     private void win() {
         imageButton_EmptyCup.setVisibility(View.INVISIBLE);
-        Toast.makeText(this, "You filled the cup!", Toast.LENGTH_SHORT).show();
+
+        PopupWindow popupWindow = new PopupWindow(this);
+        View popupView = LayoutInflater.from(this).inflate(R.layout.progress_menu, null);
+        popupWindow.setBackgroundDrawable(new ColorDrawable(0xCC000000));
+        popupWindow.setContentView(popupView);
+        popupWindow.setWidth(ViewGroup.LayoutParams.MATCH_PARENT);
+        popupWindow.setHeight(ViewGroup.LayoutParams.MATCH_PARENT);
+        popupWindow.setFocusable(true);
+        popupWindow.showAtLocation(findViewById(android.R.id.content), Gravity.CENTER, 0, 0);
+        setUpPopupAnimations(popupView);
+    }
+
+    private void setUpPopupAnimations(View layout) {
+        animationView = layout.findViewById(R.id.animation_view);
+        animationView.addAnimatorListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                fadeOutAnimationViewAndShowProgress(layout);
+            }
+        });
+    }
+
+    private void fadeOutAnimationViewAndShowProgress(View layout) {
+        animationView.animate().alpha(0f).withEndAction(() -> {
+            handler = new Handler(Looper.getMainLooper());
+            handler.postDelayed(() -> showProgressLayout(layout), 300);
+        }).start();
+    }
+
+    private void showProgressLayout(View layout) {
+        View progress_menu = layout.findViewById(R.id.progress_menu);
+        TextView stage_complete_txt = layout.findViewById(R.id.stage_complete);
+        Button button_back_to_lobby = layout.findViewById(R.id.button_back_to_lobby);
+        progress_menu.setVisibility(View.VISIBLE);
+        stage_complete_txt.setText("Stage 1 COMPLETE!");
+        Button button_continue = layout.findViewById(R.id.button_continue);
+        button_continue.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(Game1.this, Game2.class);
+                i.putExtra("email", email);
+                i.putExtra("stage", stage);
+                startActivity(i);
+            }
+        });
+        button_back_to_lobby.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(Game1.this, LobbyPage.class);
+                i.putExtra("email", email);
+                i.putExtra("stage", stage);
+                startActivity(i);
+            }
+        });
+        DatabaseHelper dbHelper = new DatabaseHelper(getApplicationContext());
+
+        if(stage > 1){
+            if (new_time_taken < old_time_taken){
+                dbHelper.updateStatus(email, String.valueOf(stage), String.valueOf(new_time_taken));
+            } else {
+                dbHelper.updateStatus(email, String.valueOf(stage), String.valueOf(old_time_taken));
+            }
+        } else {
+            if (new_time_taken < old_time_taken){
+                dbHelper.updateStatus(email, "1", String.valueOf(new_time_taken));
+            } else {
+                dbHelper.updateStatus(email, "1", String.valueOf(old_time_taken));
+            }
+        }
+        ObjectAnimator fadeInAnimator = ObjectAnimator.ofFloat(progress_menu, "alpha", 0f, 1f);
+        fadeInAnimator.setDuration(1000);
+        fadeInAnimator.start();
     }
 
     @Override
@@ -129,7 +225,7 @@ public class Game1 extends AppCompatActivity implements View.OnClickListener, Se
 
     private void navigateHome() {
         Intent i = new Intent(Game1.this, LobbyPage.class);
-        i.putExtra("Email", email);
+        i.putExtra("email", email);
         startActivity(i);
     }
 

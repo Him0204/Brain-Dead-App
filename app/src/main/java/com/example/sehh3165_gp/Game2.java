@@ -271,22 +271,19 @@ public class Game2 extends AppCompatActivity implements View.OnClickListener, Vi
         });
         DatabaseHelper dbHelper = new DatabaseHelper(getApplicationContext());
 
-        if(stage > 2){
-            if (new_time_taken < old_time_taken){
+        if (stage > 2) {
+            if (new_time_taken < old_time_taken) {
                 dbHelper.updateStatus(email, String.valueOf(stage), String.valueOf(new_time_taken));
             } else {
                 dbHelper.updateStatus(email, String.valueOf(stage), String.valueOf(old_time_taken));
             }
+        } else if (new_time_taken < old_time_taken) {
+            dbHelper.updateStatus(email, "2", String.valueOf(new_time_taken));
         } else {
-            if (new_time_taken < old_time_taken){
-                dbHelper.updateStatus(email, "2", String.valueOf(new_time_taken));
-            } else {
-                dbHelper.updateStatus(email, "2", String.valueOf(old_time_taken));
-            }
+            dbHelper.updateStatus(email, "2", String.valueOf(old_time_taken));
         }
         ObjectAnimator fadeInAnimator = ObjectAnimator.ofFloat(progress_menu, "alpha", 0f, 1f);
         fadeInAnimator.setDuration(1000);
         fadeInAnimator.start();
     }
-
 }

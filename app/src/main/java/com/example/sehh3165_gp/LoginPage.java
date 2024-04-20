@@ -43,7 +43,7 @@ public class LoginPage extends AppCompatActivity implements View.OnClickListener
         DB.updateStatus("Michael.Smith@gmail.com", "8","50000");
         DB.updateStatus("Jessica.Jones@gmail.com", "7","122000");
         DB.updateStatus("Chris.Brown@gmail.com.Jones@gmail.com", "7","123000");
-        DB.updateStatus("Sarah.Johnson@gmail.com", "2","252000");
+        DB.updateStatus("Sarah.Johnson@gmail.com", "1","252000");
         DB.updateStatus("David.Lee@gmail.com", "2","253000");
         DB.updateStatus("Emma.Wilson@gmail.com", "0","0");
         DB.updateStatus("James.Taylor@gmail.com", "6","572000");

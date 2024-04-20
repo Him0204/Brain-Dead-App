@@ -46,6 +46,7 @@ public class Game3 extends AppCompatActivity implements View.OnClickListener, Vi
     int stage;
     int old_time_taken;
     int new_time_taken;
+    int time_difference;
     private LottieAnimationView animationView;
     private Handler handler;
     boolean won = false;
@@ -74,24 +75,6 @@ public class Game3 extends AppCompatActivity implements View.OnClickListener, Vi
         game_hint.setOnClickListener(this);
         game_reset.setOnClickListener(this);
 
-        Drawable speaker = ContextCompat.getDrawable(getApplicationContext(), R.drawable.setting_speaker);
-        Drawable muted = ContextCompat.getDrawable(getApplicationContext(), R.drawable.setting_mute);
-
-        boolean isPlaying = prefs.getBoolean("music_enabled", true);
-        if (isPlaying) {
-            sound.setImageDrawable(speaker);
-        } else {
-            sound.setImageDrawable(muted);
-        }
-
-        wakeBoy = findViewById(R.id.imageButton_insomnia);
-        sleepBoy = findViewById(R.id.imageButton_sleeping);
-        Obj = findViewById(R.id.imageButton_aromatherapy);
-        Obj2 = findViewById(R.id.imageButton_mp3);
-        Obj3 = findViewById(R.id.imageButton_milk);
-        Obj.setOnTouchListener(this);
-        Obj2.setOnTouchListener(this);
-        Obj3.setOnTouchListener(this);
 
     }
 
@@ -219,6 +202,17 @@ public class Game3 extends AppCompatActivity implements View.OnClickListener, Vi
         wakeBoy.setVisibility(View.INVISIBLE);
         sleepBoy.setVisibility(View.VISIBLE);
 
+        time_difference = (int) System.currentTimeMillis() - new_time_taken;
+        DatabaseHelper dbHelper = new DatabaseHelper(getApplicationContext());
+
+        if(stage == 2){
+            if (time_difference < old_time_taken || old_time_taken == 0){
+                dbHelper.updateStatus(email, "3", String.valueOf(time_difference));
+            } else {
+                dbHelper.updateStatus(email, "3", String.valueOf(old_time_taken));
+            }
+        }
+
         PopupWindow popupWindow = new PopupWindow(this);
         View popupView = LayoutInflater.from(this).inflate(R.layout.progress_menu, null);
         popupWindow.setBackgroundDrawable(new ColorDrawable(0xCC000000));
@@ -251,7 +245,6 @@ public class Game3 extends AppCompatActivity implements View.OnClickListener, Vi
         View progress_menu = layout.findViewById(R.id.progress_menu);
         TextView stage_complete_txt = layout.findViewById(R.id.stage_complete);
         progress_menu.setVisibility(View.VISIBLE);
-        new_time_taken = (int) System.currentTimeMillis() - new_time_taken;
         stage_complete_txt.setText("Stage 3 COMPLETE!");
         Button button_continue = layout.findViewById(R.id.button_continue);
         Button button_back_to_lobby = layout.findViewById(R.id.button_back_to_lobby);
@@ -265,15 +258,6 @@ public class Game3 extends AppCompatActivity implements View.OnClickListener, Vi
             i.putExtra("email", email);
             startActivity(i);
         });
-        DatabaseHelper dbHelper = new DatabaseHelper(getApplicationContext());
-
-        if(stage == 2){
-            if (new_time_taken < old_time_taken){
-                dbHelper.updateStatus(email, "3", String.valueOf(new_time_taken));
-            } else {
-                dbHelper.updateStatus(email, "3", String.valueOf(old_time_taken));
-            }
-        }
         ObjectAnimator fadeInAnimator = ObjectAnimator.ofFloat(progress_menu, "alpha", 0f, 1f);
         fadeInAnimator.setDuration(1000);
         fadeInAnimator.start();

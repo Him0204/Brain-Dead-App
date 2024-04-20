@@ -50,6 +50,7 @@ public class Game5 extends Activity implements View.OnTouchListener, View.OnClic
     int stage;
     int old_time_taken;
     int new_time_taken;
+    int time_difference;
 
 
     @Override
@@ -59,7 +60,10 @@ public class Game5 extends Activity implements View.OnTouchListener, View.OnClic
 
         Bundle extras = getIntent().getExtras();
         email = extras != null ? extras.getString("email") : null;
-        stage = extras != null ? extras.getInt("stage") : 0;
+        DatabaseHelper dbHelper = new DatabaseHelper(getApplicationContext());
+        stage = Integer.parseInt(dbHelper.getInfo(email, 1));
+        old_time_taken = Integer.parseInt(dbHelper.getInfo(email, 2));
+        new_time_taken = (int) System.currentTimeMillis();
 
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
         _root = findViewById(R.id.relative_layout);
@@ -196,6 +200,16 @@ public class Game5 extends Activity implements View.OnTouchListener, View.OnClic
                     garage.setVisibility(View.GONE);
                     body.setVisibility(View.GONE);
 
+                    time_difference = (int) System.currentTimeMillis() - new_time_taken;
+                    DatabaseHelper dbHelper = new DatabaseHelper(getApplicationContext());
+                    if(stage == 4){
+                        if (time_difference < old_time_taken || old_time_taken == 0){
+                            dbHelper.updateStatus(email, "5", String.valueOf(time_difference));
+                        } else {
+                            dbHelper.updateStatus(email, "5", String.valueOf(old_time_taken));
+                        }
+                    }
+
                     // Create a PopupWindow object
                     PopupWindow popupWindow = new PopupWindow(Game5.this);
 
@@ -234,15 +248,6 @@ public class Game5 extends Activity implements View.OnTouchListener, View.OnClic
                                         handler.postDelayed(() -> {
                                             progress_menu = newLayout.findViewById(R.id.progress_menu);
                                             progress_menu.setVisibility(View.VISIBLE);
-                                            DatabaseHelper dbHelper = new DatabaseHelper(getApplicationContext());
-
-                                            if(stage == 4){
-                                                if (new_time_taken < old_time_taken){
-                                                    dbHelper.updateStatus(email, "5", String.valueOf(new_time_taken));
-                                                } else {
-                                                    dbHelper.updateStatus(email, "5", String.valueOf(old_time_taken));
-                                                }
-                                            }
 
                                             button_continue.setOnClickListener(v -> {
                                                 Intent i = new Intent(Game5.this, Game6.class);

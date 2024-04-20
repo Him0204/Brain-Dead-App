@@ -48,6 +48,7 @@ public class Game7 extends AppCompatActivity implements View.OnClickListener {
     int stage;
     int old_time_taken;
     int new_time_taken;
+    int time_difference;
     private LottieAnimationView animationView;
     private Handler handler;
     boolean won = false;
@@ -60,7 +61,10 @@ public class Game7 extends AppCompatActivity implements View.OnClickListener {
 
         Bundle extras = getIntent().getExtras();
         email = extras != null ? extras.getString("email") : null;
-        stage = extras != null ? extras.getInt("stage") : 0;
+        DatabaseHelper dbHelper = new DatabaseHelper(getApplicationContext());
+        stage = Integer.parseInt(dbHelper.getInfo(email, 1));
+        old_time_taken = Integer.parseInt(dbHelper.getInfo(email, 2));
+        new_time_taken = (int) System.currentTimeMillis();
 
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
         home = findViewById(R.id.imageButton_home);
@@ -225,6 +229,17 @@ public class Game7 extends AppCompatActivity implements View.OnClickListener {
     }
 
     private void win() {
+        time_difference = (int) System.currentTimeMillis() - new_time_taken;
+        DatabaseHelper dbHelper = new DatabaseHelper(getApplicationContext());
+
+        if(stage == 6){
+            if (time_difference < old_time_taken || old_time_taken == 0){
+                dbHelper.updateStatus(email, "7", String.valueOf(time_difference));
+            } else {
+                dbHelper.updateStatus(email, "7", String.valueOf(old_time_taken));
+            }
+        }
+
         PopupWindow popupWindow = new PopupWindow(this);
         View popupView = LayoutInflater.from(this).inflate(R.layout.progress_menu, null);
         popupWindow.setBackgroundDrawable(new ColorDrawable(0xCC000000));
@@ -265,7 +280,6 @@ public class Game7 extends AppCompatActivity implements View.OnClickListener {
             public void onClick(View v) {
                 Intent i = new Intent(Game7.this, Game8.class);
                 i.putExtra("email", email);
-                i.putExtra("stage", stage);
                 startActivity(i);
             }
         });
@@ -274,19 +288,9 @@ public class Game7 extends AppCompatActivity implements View.OnClickListener {
             public void onClick(View v) {
                 Intent i = new Intent(Game7.this, LobbyPage.class);
                 i.putExtra("email", email);
-                i.putExtra("stage", stage);
                 startActivity(i);
             }
         });
-        DatabaseHelper dbHelper = new DatabaseHelper(getApplicationContext());
-
-        if(stage == 6){
-            if (new_time_taken < old_time_taken){
-                dbHelper.updateStatus(email, "7", String.valueOf(new_time_taken));
-            } else {
-                dbHelper.updateStatus(email, "7", String.valueOf(old_time_taken));
-            }
-        }
         ObjectAnimator fadeInAnimator = ObjectAnimator.ofFloat(progress_menu, "alpha", 0f, 1f);
         fadeInAnimator.setDuration(1000);
         fadeInAnimator.start();

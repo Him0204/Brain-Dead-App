@@ -50,6 +50,7 @@ public class Game6 extends AppCompatActivity implements View.OnTouchListener, Vi
     int stage;
     int old_time_taken;
     int new_time_taken;
+    int time_difference;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,7 +62,10 @@ public class Game6 extends AppCompatActivity implements View.OnTouchListener, Vi
 
         Bundle extras = getIntent().getExtras();
         email = extras != null ? extras.getString("email") : null;
-        stage = extras != null ? extras.getInt("stage") : 0;
+        DatabaseHelper dbHelper = new DatabaseHelper(getApplicationContext());
+        stage = Integer.parseInt(dbHelper.getInfo(email, 1));
+        old_time_taken = Integer.parseInt(dbHelper.getInfo(email, 2));
+        new_time_taken = (int) System.currentTimeMillis();
 
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
         home = findViewById(R.id.imageButton_home);
@@ -183,6 +187,18 @@ public class Game6 extends AppCompatActivity implements View.OnTouchListener, Vi
         vacuum_for_guy.setVisibility(View.GONE);
         fat_guy.setVisibility(View.GONE);
         vacuum.setVisibility(View.VISIBLE);
+
+        time_difference = (int) System.currentTimeMillis() - new_time_taken;
+        DatabaseHelper dbHelper = new DatabaseHelper(getApplicationContext());
+
+        if(stage == 5){
+            if (time_difference < old_time_taken || old_time_taken == 0){
+                dbHelper.updateStatus(email, "6", String.valueOf(time_difference));
+            } else {
+                dbHelper.updateStatus(email, "6", String.valueOf(old_time_taken));
+            }
+        }
+
         showCompletionPopup();
     }
 
@@ -218,15 +234,7 @@ public class Game6 extends AppCompatActivity implements View.OnTouchListener, Vi
     private void showProgressLayout(View layout) {
         View progress_menu = layout.findViewById(R.id.progress_menu);
         progress_menu.setVisibility(View.VISIBLE);
-        DatabaseHelper dbHelper = new DatabaseHelper(getApplicationContext());
 
-        if(stage == 5){
-            if (new_time_taken < old_time_taken){
-                dbHelper.updateStatus(email, "6", String.valueOf(new_time_taken));
-            } else {
-                dbHelper.updateStatus(email, "6", String.valueOf(old_time_taken));
-            }
-        }
         button_continue.setOnClickListener(v12 -> {
             Intent i = new Intent(Game6.this, Game7.class);
             i.putExtra("email", email);

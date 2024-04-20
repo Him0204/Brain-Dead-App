@@ -41,12 +41,12 @@ public class Game4 extends AppCompatActivity implements View.OnClickListener, Vi
     ImageButton home, sound, game_hint, game_reset;
     ImageButton networkPC, standalonePC, router;
     TextView title;
-    DatabaseHelper dbHelper = new DatabaseHelper(getApplicationContext());
     SharedPreferences prefs;
     String email;
     int stage;
     int old_time_taken;
     int new_time_taken;
+    int time_difference;
     private LottieAnimationView animationView;
     private Handler handler;
     boolean won = false;
@@ -60,6 +60,7 @@ public class Game4 extends AppCompatActivity implements View.OnClickListener, Vi
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
         Bundle extras = getIntent().getExtras();
         email = extras != null ? extras.getString("email") : null;
+        DatabaseHelper dbHelper = new DatabaseHelper(getApplicationContext());
         stage = Integer.parseInt(dbHelper.getInfo(email, 1));
         old_time_taken = Integer.parseInt(dbHelper.getInfo(email, 2));
         new_time_taken = (int) System.currentTimeMillis();
@@ -89,18 +90,8 @@ public class Game4 extends AppCompatActivity implements View.OnClickListener, Vi
         router = findViewById(R.id.imageButton_router);
         router.setOnTouchListener(this);
 
-        connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         initialNetworkState = isInternetAvailable();
         updateNetworkState(initialNetworkState);
-        if (initialNetworkState) {
-            title.setText("4. Disconnect the WiFi");
-            router.setVisibility(View.VISIBLE);
-        }
-        else {
-            title.setText("4. Connect to the WiFi");
-            router.setVisibility(View.INVISIBLE);
-        }
-
         setupNetworkCallback();
     }
 
@@ -209,6 +200,10 @@ public class Game4 extends AppCompatActivity implements View.OnClickListener, Vi
     }
 
     private void setupNetworkCallback() {
+        // Initialize connectivityManager
+        connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        // Prepare the network callback to respond to network changes
         networkCallback = new ConnectivityManager.NetworkCallback() {
             @Override
             public void onAvailable(Network network) {
@@ -220,20 +215,24 @@ public class Game4 extends AppCompatActivity implements View.OnClickListener, Vi
                 runOnUiThread(() -> updateNetworkState(false));
             }
         };
-
+        // Build the network request that specifies what kind of network capabilities you are interested in
         NetworkRequest request = new NetworkRequest.Builder()
                 .addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
                 .build();
+
+        // Register the network callback with the network request
         connectivityManager.registerNetworkCallback(request, networkCallback);
     }
 
+
     private void updateNetworkState(boolean isOnline) {
         if (isOnline) {
-            networkPC.setVisibility(View.VISIBLE);
-            standalonePC.setVisibility(View.INVISIBLE);
-        } else {
-            networkPC.setVisibility(View.INVISIBLE);
-            standalonePC.setVisibility(View.VISIBLE);
+            title.setText("4. Disconnect the WiFi");
+            router.setVisibility(View.VISIBLE);
+        }
+        else {
+            title.setText("4. Connect to the WiFi");
+            router.setVisibility(View.INVISIBLE);
         }
 
         // Check if network state changed to pass the game
@@ -243,24 +242,6 @@ public class Game4 extends AppCompatActivity implements View.OnClickListener, Vi
             initialNetworkState = isOnline; // Update initial state to prevent multiple triggers
         }
     }
-
-    /*
-    private boolean Overlapped(View firstView, View secondView) {
-        int[] firstPosition = new int[2];
-        int[] secondPosition = new int[2];
-
-        firstView.getLocationOnScreen(firstPosition);
-        secondView.getLocationOnScreen(secondPosition);
-
-        int firstViewRight = firstPosition[0] + firstView.getWidth();
-        int firstViewBottom = firstPosition[1] + firstView.getHeight();
-        int secondViewRight = secondPosition[0] + secondView.getWidth();
-        int secondViewBottom = secondPosition[1] + secondView.getHeight();
-
-        return !(firstPosition[0] > secondViewRight || firstViewRight < secondPosition[0] ||
-                firstPosition[1] > secondViewBottom || firstViewBottom < secondPosition[1]);
-    }
-     */
 
     private boolean isInternetAvailable() {
         ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -281,6 +262,18 @@ public class Game4 extends AppCompatActivity implements View.OnClickListener, Vi
         else {
             router.setVisibility(View.VISIBLE);
         }
+
+        time_difference = (int) System.currentTimeMillis() - new_time_taken;
+        DatabaseHelper dbHelper = new DatabaseHelper(getApplicationContext());
+        if(stage == 3){
+
+            if (time_difference < old_time_taken || old_time_taken == 0){
+                dbHelper.updateStatus(email, "4", String.valueOf(time_difference));
+            } else {
+                dbHelper.updateStatus(email, "4", String.valueOf(old_time_taken));
+            }
+        }
+
         PopupWindow popupWindow = new PopupWindow(this);
         View popupView = LayoutInflater.from(this).inflate(R.layout.progress_menu, null);
         popupWindow.setBackgroundDrawable(new ColorDrawable(0xCC000000));
@@ -314,7 +307,6 @@ public class Game4 extends AppCompatActivity implements View.OnClickListener, Vi
         TextView stage_complete_txt = layout.findViewById(R.id.stage_complete);
         Button button_back_to_lobby = layout.findViewById(R.id.button_back_to_lobby);
         progress_menu.setVisibility(View.VISIBLE);
-        new_time_taken = (int) System.currentTimeMillis() - new_time_taken;
         stage_complete_txt.setText("Stage 4 COMPLETE!");
         Button button_continue = layout.findViewById(R.id.button_continue);
         button_continue.setOnClickListener(new View.OnClickListener() {
@@ -333,14 +325,6 @@ public class Game4 extends AppCompatActivity implements View.OnClickListener, Vi
                 startActivity(i);
             }
         });
-
-        if(stage == 3){
-            if (new_time_taken < old_time_taken){
-                dbHelper.updateStatus(email, "4", String.valueOf(new_time_taken));
-            } else {
-                dbHelper.updateStatus(email, "4", String.valueOf(old_time_taken));
-            }
-        }
         ObjectAnimator fadeInAnimator = ObjectAnimator.ofFloat(progress_menu, "alpha", 0f, 1f);
         fadeInAnimator.setDuration(1000);
         fadeInAnimator.start();

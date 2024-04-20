@@ -48,6 +48,7 @@ public class Game1 extends AppCompatActivity implements View.OnClickListener, Se
     int stage;
     int old_time_taken;
     int new_time_taken;
+    int time_difference;
     private LottieAnimationView animationView;
     private Handler handler;
     boolean won = false;
@@ -107,10 +108,10 @@ public class Game1 extends AppCompatActivity implements View.OnClickListener, Se
             SensorManager.getRotationMatrixFromVector(rotationMatrix, event.values);
             SensorManager.getOrientation(rotationMatrix, orientationAngles);
             float azimuthInRadians = orientationAngles[0];
-            float azimuthInDegress = (float) Math.toDegrees(azimuthInRadians);
+            float azimuthInDegrees = (float) Math.toDegrees(azimuthInRadians);
 
             // Check for 90 degree anticlockwise rotation
-            if (azimuthInDegress > 80 && azimuthInDegress < 100 && !won) {
+            if (azimuthInDegrees < -80 && azimuthInDegrees > -100 && !won) {
                 won = true;
                 win();
             }
@@ -126,18 +127,31 @@ public class Game1 extends AppCompatActivity implements View.OnClickListener, Se
                 SensorManager.getRotationMatrix(rotationMatrix, null, lastAccelerometer, lastMagnetometer);
                 SensorManager.getOrientation(rotationMatrix, orientationAngles);
                 float azimuthInRadians = orientationAngles[0];
-                float azimuthInDegress = (float) Math.toDegrees(azimuthInRadians);
+                float azimuthInDegrees = (float) Math.toDegrees(azimuthInRadians);
 
-                if (azimuthInDegress < -80 && azimuthInDegress > -100) {
+                // Check for 90 degree anticlockwise rotation
+                if (azimuthInDegrees < -80 && azimuthInDegrees > -100) {
                     win();
                 }
             }
         }
     }
 
+
     private void win() {
         Drawable water = ContextCompat.getDrawable(getApplicationContext(), R.drawable.g1_full_cup);
         imageButton_EmptyCup.setImageDrawable(water);
+
+        time_difference = (int) System.currentTimeMillis() - new_time_taken;
+        DatabaseHelper dbHelper = new DatabaseHelper(getApplicationContext());
+
+        if(stage == 0){
+            if (time_difference < old_time_taken || old_time_taken == 0){
+                dbHelper.updateStatus(email, "1", String.valueOf(time_difference));
+            } else {
+                dbHelper.updateStatus(email, "1", String.valueOf(old_time_taken));
+            }
+        }
 
         PopupWindow popupWindow = new PopupWindow(this);
         View popupView = LayoutInflater.from(this).inflate(R.layout.progress_menu, null);
@@ -172,34 +186,18 @@ public class Game1 extends AppCompatActivity implements View.OnClickListener, Se
         TextView stage_complete_txt = layout.findViewById(R.id.stage_complete);
         Button button_back_to_lobby = layout.findViewById(R.id.button_back_to_lobby);
         progress_menu.setVisibility(View.VISIBLE);
-        new_time_taken = (int) System.currentTimeMillis() - new_time_taken;
         stage_complete_txt.setText("Stage 1 COMPLETE!");
         Button button_continue = layout.findViewById(R.id.button_continue);
-        button_continue.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent i = new Intent(Game1.this, Game2.class);
-                i.putExtra("email", email);
-                startActivity(i);
-            }
+        button_continue.setOnClickListener(v -> {
+            Intent i = new Intent(Game1.this, Game2.class);
+            i.putExtra("email", email);
+            startActivity(i);
         });
-        button_back_to_lobby.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent i = new Intent(Game1.this, LobbyPage.class);
-                i.putExtra("email", email);
-                startActivity(i);
-            }
+        button_back_to_lobby.setOnClickListener(v -> {
+            Intent i = new Intent(Game1.this, LobbyPage.class);
+            i.putExtra("email", email);
+            startActivity(i);
         });
-        DatabaseHelper dbHelper = new DatabaseHelper(getApplicationContext());
-
-        if(stage == 0){
-            if (new_time_taken < old_time_taken){
-                dbHelper.updateStatus(email, "1", String.valueOf(new_time_taken));
-            } else {
-                dbHelper.updateStatus(email, "1", String.valueOf(old_time_taken));
-            }
-        }
         ObjectAnimator fadeInAnimator = ObjectAnimator.ofFloat(progress_menu, "alpha", 0f, 1f);
         fadeInAnimator.setDuration(1000);
         fadeInAnimator.start();

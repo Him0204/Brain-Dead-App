@@ -42,6 +42,7 @@ public class Game2 extends AppCompatActivity implements View.OnClickListener, Vi
     int stage;
     int old_time_taken;
     int new_time_taken;
+    int time_difference;
     private LottieAnimationView animationView;
     private Handler handler;
     Button button_continue, button_back_to_lobby;
@@ -218,6 +219,16 @@ public class Game2 extends AppCompatActivity implements View.OnClickListener, Vi
     private void win() {
         cryingBaby.setVisibility(View.INVISIBLE);
         smilingBaby.setVisibility(View.VISIBLE);
+        time_difference = (int) System.currentTimeMillis() - new_time_taken;
+        DatabaseHelper dbHelper = new DatabaseHelper(getApplicationContext());
+
+        if(stage == 1){
+            if (time_difference < old_time_taken || old_time_taken == 0){
+                dbHelper.updateStatus(email, "2", String.valueOf(time_difference));
+            } else {
+                dbHelper.updateStatus(email, "2", String.valueOf(old_time_taken));
+            }
+        }
 
         PopupWindow popupWindow = new PopupWindow(this);
         View popupView = LayoutInflater.from(this).inflate(R.layout.progress_menu, null);
@@ -251,7 +262,6 @@ public class Game2 extends AppCompatActivity implements View.OnClickListener, Vi
         View progress_menu = layout.findViewById(R.id.progress_menu);
         TextView stage_complete_txt = layout.findViewById(R.id.stage_complete);
         button_back_to_lobby = layout.findViewById(R.id.button_back_to_lobby);
-        new_time_taken = (int) System.currentTimeMillis() - new_time_taken;
         progress_menu.setVisibility(View.VISIBLE);
         stage_complete_txt.setText("Stage 2 COMPLETE!");
         button_continue = layout.findViewById(R.id.button_continue);
@@ -271,15 +281,6 @@ public class Game2 extends AppCompatActivity implements View.OnClickListener, Vi
                 startActivity(i);
             }
         });
-        DatabaseHelper dbHelper = new DatabaseHelper(getApplicationContext());
-
-        if(stage == 1){
-            if (new_time_taken < old_time_taken){
-                dbHelper.updateStatus(email, "2", String.valueOf(new_time_taken));
-            } else {
-                dbHelper.updateStatus(email, "2", String.valueOf(old_time_taken));
-            }
-        }
         ObjectAnimator fadeInAnimator = ObjectAnimator.ofFloat(progress_menu, "alpha", 0f, 1f);
         fadeInAnimator.setDuration(1000);
         fadeInAnimator.start();

@@ -58,13 +58,8 @@ public class LobbyPage extends AppCompatActivity {
         buttonArray.add(button_lvl8);
 
         stage = Integer.parseInt(dbHelper.getInfo(email, 1));
-        if (stage == 0) {
-            Button button = buttonArray.get(0);
-            button.setBackgroundResource(R.drawable.lobby_button_rectangle2);
-            button.setEnabled(true);
-        }
 
-        for (int i = 0; i < stage; i++){
+        for (int i = 0; i <= stage && i != 8; i++){
             Button button = buttonArray.get(i);
             button.setBackgroundResource(R.drawable.lobby_button_rectangle2);
             button.setEnabled(true);

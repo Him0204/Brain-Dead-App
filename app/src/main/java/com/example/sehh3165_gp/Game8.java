@@ -59,6 +59,7 @@ public class Game8 extends AppCompatActivity implements View.OnTouchListener, Vi
     SharedPreferences prefs;
     int old_time_taken;
     int new_time_taken;
+    int time_difference;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,9 +67,16 @@ public class Game8 extends AppCompatActivity implements View.OnTouchListener, Vi
         setContentView(R.layout.game8_fight);
 
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        if (prefs.getBoolean("music_enabled", true)) {
+            stopService(new Intent(this, BackgroundMusic.class));
+        }
+
         Bundle extras = getIntent().getExtras();
         email = extras != null ? extras.getString("email") : null;
-        stage = extras != null ? extras.getInt("stage") : 0;
+        DatabaseHelper dbHelper = new DatabaseHelper(getApplicationContext());
+        stage = Integer.parseInt(dbHelper.getInfo(email, 1));
+        old_time_taken = Integer.parseInt(dbHelper.getInfo(email, 2));
+        new_time_taken = (int) System.currentTimeMillis();
 
         _root = findViewById(R.id.relative_layout);
 
@@ -192,6 +200,17 @@ public class Game8 extends AppCompatActivity implements View.OnTouchListener, Vi
         bgm_laser = MediaPlayer.create(this, R.raw.stage8_laser);
         bgm_laser.start();
 
+        time_difference = (int) System.currentTimeMillis() - new_time_taken;
+        DatabaseHelper dbHelper = new DatabaseHelper(getApplicationContext());
+
+        if(stage == 7 || stage == 8){
+            if (time_difference < old_time_taken || old_time_taken == 0){
+                dbHelper.updateStatus(email, "8", String.valueOf(time_difference));
+            } else {
+                dbHelper.updateStatus(email, "8", String.valueOf(old_time_taken));
+            }
+        }
+
         handler.postDelayed(() -> {
             laser_beam = findViewById(R.id.laser_beam);
             monster = findViewById(R.id.monster);
@@ -220,15 +239,7 @@ public class Game8 extends AppCompatActivity implements View.OnTouchListener, Vi
                         animationView.setVisibility(View.GONE);
                         progress_menu = newLayout.findViewById(R.id.progress_menu);
                         progress_menu.setVisibility(View.VISIBLE);
-                        DatabaseHelper dbHelper = new DatabaseHelper(getApplicationContext());
 
-                        if(stage == 7 || stage == 8){
-                            if (new_time_taken < old_time_taken){
-                                dbHelper.updateStatus(email, "8", String.valueOf(new_time_taken));
-                            } else {
-                                dbHelper.updateStatus(email, "8", String.valueOf(old_time_taken));
-                            }
-                        }
                         button_continue = newLayout.findViewById(R.id.button_continue);
                         button_continue.setOnClickListener(v1 -> {
                             Intent i = new Intent(Game8.this, LobbyPage.class);
@@ -288,10 +299,10 @@ public class Game8 extends AppCompatActivity implements View.OnTouchListener, Vi
         editor.apply();
 
         if (isPlaying) {
-            stopService(new Intent(this, BackgroundMusic.class));
+            bgm.stop();
             sound.setImageDrawable(muted);
         } else {
-            startService(new Intent(this, BackgroundMusic.class));
+            bgm.start();
             sound.setImageDrawable(speaker);
         }
     }

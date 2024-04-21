@@ -309,7 +309,7 @@ public class Game7 extends AppCompatActivity implements View.OnClickListener {
         View progress_menu = layout.findViewById(R.id.progress_menu);
         TextView stage_complete_txt = layout.findViewById(R.id.stage_complete);
         progress_menu.setVisibility(View.VISIBLE);
-        stage_complete_txt.setText("Stage 4 COMPLETE!");
+        stage_complete_txt.setText("Stage 7 COMPLETE!");
         Button button_continue = layout.findViewById(R.id.button_continue);
         Button button_back_to_lobby = layout.findViewById(R.id.button_back_to_lobby);
         button_continue.setOnClickListener(new View.OnClickListener() {

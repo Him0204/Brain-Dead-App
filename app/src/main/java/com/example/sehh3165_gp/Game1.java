@@ -60,7 +60,6 @@ public class Game1 extends AppCompatActivity implements View.OnClickListener, Se
 
         Bundle extras = getIntent().getExtras();
         email = extras != null ? extras.getString("email") : null;
-        email = "Emma.Wilson@gmail.com";
         DatabaseHelper dbHelper = new DatabaseHelper(getApplicationContext());
         stage = Integer.parseInt(dbHelper.getInfo(email, 1));
         old_time_taken = Integer.parseInt(dbHelper.getInfo(email, 2));

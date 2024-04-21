@@ -21,6 +21,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -233,17 +234,26 @@ public class Game6 extends AppCompatActivity implements View.OnTouchListener, Vi
 
     private void showProgressLayout(View layout) {
         View progress_menu = layout.findViewById(R.id.progress_menu);
+        TextView stage_complete_txt = layout.findViewById(R.id.stage_complete);
+        Button button_back_to_lobby = layout.findViewById(R.id.button_back_to_lobby);
         progress_menu.setVisibility(View.VISIBLE);
-
-        button_continue.setOnClickListener(v12 -> {
-            Intent i = new Intent(Game6.this, Game7.class);
-            i.putExtra("email", email);
-            startActivity(i);
+        stage_complete_txt.setText("Stage 6 COMPLETE!");
+        Button button_continue = layout.findViewById(R.id.button_continue);
+        button_continue.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(Game6.this, Game7.class);
+                i.putExtra("email", email);
+                startActivity(i);
+            }
         });
-        button_back_to_lobby.setOnClickListener(v1 -> {
-            Intent i = new Intent(Game6.this, LobbyPage.class);
-            i.putExtra("email", email);
-            startActivity(i);
+        button_back_to_lobby.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(Game6.this, LobbyPage.class);
+                i.putExtra("email", email);
+                startActivity(i);
+            }
         });
         ObjectAnimator fadeInAnimator = ObjectAnimator.ofFloat(progress_menu, "alpha", 0f, 1f);
         fadeInAnimator.setDuration(1000);

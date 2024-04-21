@@ -75,7 +75,24 @@ public class Game3 extends AppCompatActivity implements View.OnClickListener, Vi
         game_hint.setOnClickListener(this);
         game_reset.setOnClickListener(this);
 
+        Drawable speaker = ContextCompat.getDrawable(getApplicationContext(), R.drawable.setting_speaker);
+        Drawable muted = ContextCompat.getDrawable(getApplicationContext(), R.drawable.setting_mute);
 
+        boolean isPlaying = prefs.getBoolean("music_enabled", true);
+        if (isPlaying) {
+            sound.setImageDrawable(muted);
+        } else {
+            sound.setImageDrawable(speaker);
+        }
+
+        wakeBoy = findViewById(R.id.imageButton_insomnia);
+        sleepBoy = findViewById(R.id.imageButton_sleeping);
+        Obj = findViewById(R.id.imageButton_aromatherapy);
+        Obj2 = findViewById(R.id.imageButton_mp3);
+        Obj3 = findViewById(R.id.imageButton_milk);
+        Obj.setOnTouchListener(this);
+        Obj2.setOnTouchListener(this);
+        Obj3.setOnTouchListener(this);
     }
 
     @Override

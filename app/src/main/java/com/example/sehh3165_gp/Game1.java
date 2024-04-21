@@ -60,6 +60,7 @@ public class Game1 extends AppCompatActivity implements View.OnClickListener, Se
 
         Bundle extras = getIntent().getExtras();
         email = extras != null ? extras.getString("email") : null;
+        email = "Emma.Wilson@gmail.com";
         DatabaseHelper dbHelper = new DatabaseHelper(getApplicationContext());
         stage = Integer.parseInt(dbHelper.getInfo(email, 1));
         old_time_taken = Integer.parseInt(dbHelper.getInfo(email, 2));
@@ -108,10 +109,10 @@ public class Game1 extends AppCompatActivity implements View.OnClickListener, Se
             SensorManager.getRotationMatrixFromVector(rotationMatrix, event.values);
             SensorManager.getOrientation(rotationMatrix, orientationAngles);
             float azimuthInRadians = orientationAngles[0];
-            float azimuthInDegrees = (float) Math.toDegrees(azimuthInRadians);
+            float azimuthInDegress = (float) Math.toDegrees(azimuthInRadians);
 
             // Check for 90 degree anticlockwise rotation
-            if (azimuthInDegrees < -80 && azimuthInDegrees > -100 && !won) {
+            if (azimuthInDegress < -80 && azimuthInDegress > -100 && !won) {
                 won = true;
                 win();
             }
@@ -127,10 +128,9 @@ public class Game1 extends AppCompatActivity implements View.OnClickListener, Se
                 SensorManager.getRotationMatrix(rotationMatrix, null, lastAccelerometer, lastMagnetometer);
                 SensorManager.getOrientation(rotationMatrix, orientationAngles);
                 float azimuthInRadians = orientationAngles[0];
-                float azimuthInDegrees = (float) Math.toDegrees(azimuthInRadians);
+                float azimuthInDegress = (float) Math.toDegrees(azimuthInRadians);
 
-                // Check for 90 degree anticlockwise rotation
-                if (azimuthInDegrees < -80 && azimuthInDegrees > -100) {
+                if (azimuthInDegress < -80 && azimuthInDegress > -100) {
                     win();
                 }
             }

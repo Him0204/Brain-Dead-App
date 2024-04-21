@@ -26,12 +26,10 @@ import android.widget.ImageButton;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.preference.PreferenceManager;
-
 import com.airbnb.lottie.LottieAnimationView;
 
 public class Game7 extends AppCompatActivity implements View.OnClickListener {
@@ -106,6 +104,36 @@ public class Game7 extends AppCompatActivity implements View.OnClickListener {
             }
             return false;
         });
+
+        setupViews();
+        setupListeners();
+    }
+
+    private void setupViews() {
+        whiteMic = findViewById(R.id.image_mic_white);
+        canHear = findViewById(R.id.old_ppl_msg_hear);
+        cannotHear = findViewById(R.id.old_ppl_msg);
+    }
+
+    @SuppressLint("ClickableViewAccessibility")
+    private void setupListeners() {
+        Drawable whiteMicDrawable = ContextCompat.getDrawable(getApplicationContext(), R.drawable.g7_mic_white);
+        Drawable redMicDrawable = ContextCompat.getDrawable(getApplicationContext(), R.drawable.g7_mic_red);
+
+        whiteMic.setOnTouchListener((v, event) -> {
+            switch (event.getAction()) {
+                case MotionEvent.ACTION_DOWN:
+                    whiteMic.setImageDrawable(redMicDrawable);
+                    startRecording();
+                    return true;
+                case MotionEvent.ACTION_UP:
+                    whiteMic.setImageDrawable(whiteMicDrawable);
+                    stopRecording();
+                    checkWinCondition();
+                    return true;
+            }
+            return false;
+        });
     }
 
     private void startRecording() {
@@ -145,6 +173,7 @@ public class Game7 extends AppCompatActivity implements View.OnClickListener {
 
 
     private void analyzeAudio() {
+        // Modify this method to be sensitive to normal speaking levels
         short[] buffer = new short[AudioRecord.getMinBufferSize(SAMPLE_RATE, AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT)];
         while (isRecording) {
             int readSize = audioRecorder.read(buffer, 0, buffer.length);
@@ -152,13 +181,14 @@ public class Game7 extends AppCompatActivity implements View.OnClickListener {
             for (int i = 0; i < readSize; i++) {
                 maxAmplitude = Math.max(maxAmplitude, Math.abs(buffer[i]));
             }
-            if (maxAmplitude > 10 && !won) {
-                won = true;
+            int winThreshold = 3000;
+            if (maxAmplitude > winThreshold) { // Lower the threshold for normal speaking
                 runOnUiThread(() -> {
-                    cannotHear.setVisibility(TextView.INVISIBLE);
-                    canHear.setVisibility(TextView.VISIBLE);
+                    canHear.setVisibility(View.VISIBLE);
+                    cannotHear.setVisibility(View.INVISIBLE);
+                    win();
                 });
-                win();
+                break; // Stop analyzing after winning
             }
         }
     }
@@ -226,6 +256,13 @@ public class Game7 extends AppCompatActivity implements View.OnClickListener {
         if (prefs.getBoolean("music_enabled", true)) {
             startService(new Intent(this, BackgroundMusic.class));
         }
+    }
+
+    private void checkWinCondition() {
+        // This method will be called after stopping recording to check if the player has won
+        canHear.setVisibility(View.VISIBLE);
+        cannotHear.setVisibility(View.INVISIBLE);
+        win();
     }
 
     private void win() {

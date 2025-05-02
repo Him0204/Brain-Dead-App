@@ -68,7 +68,7 @@ Brain-Dead is an interactive puzzle game application featuring 8 unique mini-gam
 ### Installation
 1. Clone the repository
    ```
-   git clone https://github.com/yourusername/Brain-Dead-App.git
+   git clone https://github.com/him0204/Brain-Dead-App.git
    ```
 2. Open the project in Android Studio
 3. Sync Gradle dependencies

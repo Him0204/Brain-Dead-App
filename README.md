@@ -97,7 +97,3 @@ The game has been tested on various Android devices to ensure compatibility acro
 ## Contributing
 
 Contributions to improve the game are welcome. Please feel free to submit a Pull Request.
-
-## License
-
-This project is licensed under the [LICENSE NAME] - see the LICENSE file for details.
